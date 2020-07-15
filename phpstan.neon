@@ -1,0 +1,4 @@
+includes:
+    - vendor/solido/php-coding-standards/phpstan.neon
+parameters:
+    treatPhpDocTypesAsCertain: false
