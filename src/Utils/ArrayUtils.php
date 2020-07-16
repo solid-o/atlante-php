@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Solido\Atlante\Utils;
 
 use function is_array;
+use function strpos;
 use function Symfony\Component\String\u;
 
 class ArrayUtils
@@ -20,7 +21,12 @@ class ArrayUtils
     {
         $res = [];
         foreach ($input as $key => $value) {
-            $key = u($key)->camel();
+            if (strpos($key, '_') === 0) {
+                $key = '_' . u($key)->camel();
+            } else {
+                $key = u($key)->camel();
+            }
+
             if (is_array($value)) {
                 $value = self::toCamelCaseKeys($value);
             }
@@ -42,7 +48,12 @@ class ArrayUtils
     {
         $res = [];
         foreach ($input as $key => $value) {
-            $key = u($key)->snake();
+            if (strpos($key, '_') === 0) {
+                $key = '_' . u($key)->snake();
+            } else {
+                $key = u($key)->snake();
+            }
+
             if (is_array($value)) {
                 $value = self::toSnakeCaseKeys($value);
             }
