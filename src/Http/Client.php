@@ -14,7 +14,6 @@ use Solido\Atlante\Requester\RequesterInterface;
 use Solido\Atlante\Requester\Response;
 use function assert;
 use function in_array;
-use function is_callable;
 use function is_iterable;
 
 class Client implements ClientInterface
@@ -81,7 +80,7 @@ class Client implements ClientInterface
         }
 
         $body = $request->getBody();
-        assert(! is_iterable($body) && ! is_callable($body));
+        assert(! is_iterable($body));
 
         $response = $this->requester->request(
             $request->getMethod(),

@@ -7,6 +7,7 @@ namespace Solido\Atlante\Requester;
 use Psr\Http\Client\ClientInterface;
 use Psr\Http\Message\RequestFactoryInterface;
 use Psr\Http\Message\StreamFactoryInterface;
+use function is_callable;
 use function is_resource;
 
 class PsrClientRequester implements RequesterInterface
@@ -33,7 +34,12 @@ class PsrClientRequester implements RequesterInterface
         }
 
         if ($requestData !== null) {
-            $stream = is_resource($requestData) ? $this->streamFactory->createStreamFromResource($requestData) :
+            if (is_callable($requestData)) {
+                $requestData = $requestData();
+            }
+
+            $stream = is_resource($requestData) ?
+                $this->streamFactory->createStreamFromResource($requestData) :
                 $this->streamFactory->createStream($requestData);
             $request = $request->withBody($stream);
         }
