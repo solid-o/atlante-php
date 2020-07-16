@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Solido\Atlante\Storage;
 
 use Psr\Cache\CacheItemPoolInterface;
+use Safe\DateTime;
 
 class PsrCacheStorage extends AbstractStorage
 {
@@ -46,7 +47,7 @@ class PsrCacheStorage extends AbstractStorage
 
         return $this->itemPool->save(
             $item
-                ->expiresAfter((int) $expiry)
+                ->expiresAt(DateTime::createFromFormat('U.u', (string) $expiry))
                 ->set($value)
         );
     }
