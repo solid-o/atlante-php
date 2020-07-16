@@ -21,7 +21,7 @@ class BodyConverterDecorator implements DecoratorInterface
         $body = $request->getBody();
         $headers = new HeaderBag($request->getHeaders());
 
-        $body = is_string($body) ? $body : function () use ($body, $headers) {
+        $body = $body === null || is_string($body) ? $body : function () use ($body, $headers) {
             $body = $this->prepare($body);
 
             if (! is_string($body)) {

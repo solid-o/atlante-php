@@ -55,7 +55,7 @@ class BodyConverterDecoratorTest extends TestCase
             '["foo","bar"]',
         ];
 
-        yield [null, 'null'];
+        yield [null, null];
     }
 
     /**
