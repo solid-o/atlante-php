@@ -8,7 +8,7 @@ use Solido\Atlante\Exception\NoTokenAvailableException;
 use Solido\Atlante\Requester\Decorator\DecoratorInterface;
 use Solido\Atlante\Requester\Request;
 use Solido\Atlante\Requester\RequesterInterface;
-use Solido\Atlante\Requester\Response;
+use Solido\Atlante\Requester\Response\ResponseInterface;
 use Solido\Atlante\Storage\StorageInterface;
 use function assert;
 use function http_build_query;
@@ -66,8 +66,8 @@ class ClientTokenAuthenticator implements DecoratorInterface
         [$body, $headers] = $this->buildTokenRequest([ 'grant_type' => 'client_credentials' ]);
         $response = $this->request($body, $headers);
 
-        if ($response->getStatus() !== 200) {
-            throw new NoTokenAvailableException(sprintf('Client credentials token returned status %d', $response->getStatus()));
+        if ($response->getStatusCode() !== 200) {
+            throw new NoTokenAvailableException(sprintf('Client credentials token returned status %d', $response->getStatusCode()));
         }
 
         $content = $response->getData();
@@ -107,7 +107,7 @@ class ClientTokenAuthenticator implements DecoratorInterface
      * @param array<string, string>|null $body
      * @param array<string, string|string[]> $headers
      */
-    private function request(?array $body, array $headers): Response
+    private function request(?array $body, array $headers): ResponseInterface
     {
         if ($this->dataEncoding === 'json') {
             $headers['Content-Type'] = 'application/json';

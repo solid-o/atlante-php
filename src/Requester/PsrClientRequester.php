@@ -7,6 +7,8 @@ namespace Solido\Atlante\Requester;
 use Psr\Http\Client\ClientInterface;
 use Psr\Http\Message\RequestFactoryInterface;
 use Psr\Http\Message\StreamFactoryInterface;
+use Solido\Atlante\Requester\Response\ResponseFactoryInterface;
+use Solido\Atlante\Requester\Response\ResponseInterface;
 use function is_callable;
 use function is_resource;
 
@@ -15,18 +17,20 @@ class PsrClientRequester implements RequesterInterface
     private ClientInterface $client;
     private RequestFactoryInterface $requestFactory;
     private StreamFactoryInterface $streamFactory;
+    private ResponseFactoryInterface $responseFactory;
 
-    public function __construct(ClientInterface $client, RequestFactoryInterface $requestFactory, StreamFactoryInterface $streamFactory)
+    public function __construct(ClientInterface $client, RequestFactoryInterface $requestFactory, StreamFactoryInterface $streamFactory, ResponseFactoryInterface $responseFactory)
     {
         $this->client = $client;
         $this->requestFactory = $requestFactory;
         $this->streamFactory = $streamFactory;
+        $this->responseFactory = $responseFactory;
     }
 
     /**
-     * @inheritDoc
+     * {@inheritdoc}
      */
-    public function request(string $method, string $uri, array $headers, $requestData = null): Response
+    public function request(string $method, string $uri, array $headers, $requestData = null): ResponseInterface
     {
         $request = $this->requestFactory->createRequest($method, $uri);
         foreach ($headers as $key => $value) {
@@ -46,6 +50,6 @@ class PsrClientRequester implements RequesterInterface
 
         $response = $this->client->sendRequest($request);
 
-        return Response::fromResponse($response);
+        return $this->responseFactory->fromResponse($response);
     }
 }
