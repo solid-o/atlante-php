@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Solido\Atlante\Http;
 
+use Solido\Atlante\Requester\Decorator\BodyConverterDecorator;
 use Solido\Atlante\Requester\Decorator\DecoratorInterface;
 use Solido\Atlante\Requester\Exception\BadRequestException;
 use Solido\Atlante\Requester\Exception\InvalidRequestException;
@@ -13,11 +14,11 @@ use Solido\Atlante\Requester\Response\BadResponse;
 use Solido\Atlante\Requester\Response\InvalidResponse;
 use Solido\Atlante\Requester\Response\ResponseFactory;
 use Solido\Atlante\Requester\Response\ResponseInterface;
-use function http_build_query;
+use function assert;
+use function end;
 use function in_array;
+use function is_callable;
 use function is_iterable;
-use function Safe\json_encode;
-use function strpos;
 
 class Client implements ClientInterface
 {
@@ -29,7 +30,7 @@ class Client implements ClientInterface
     protected ?ResponseFactory $responseFactory = null;
 
     /**
-     * @param iterable<DecoratorInterface>|null $requestDecorators
+     * @param iterable<DecoratorInterface>|null $requestDecorators Ordered list of Decorators
      */
     public function __construct(RequesterInterface $requester, ?iterable $requestDecorators = null)
     {
@@ -84,27 +85,18 @@ class Client implements ClientInterface
         }
 
         $body = $request->getBody();
-        if (is_iterable($body)) {
-            $contentType = $headerBag->get('Content-type');
-            if ($contentType === null) {
-                $contentType = 'application/json';
-                $headerBag = new HeaderBag($request->getHeaders() ?? []);
-                $headerBag->set('Content-type', $contentType);
-                $request = new Request($request->getMethod(), $request->getUrl(), $headerBag->all(), $request->getBody());
-            }
-
-            if (strpos($contentType, 'application/json') === 0) {
-                $body = json_encode($body);
-            } else {
-                $body = http_build_query($body);
-            }
+        if ((is_iterable($body) || is_callable($body)) && (empty($this->decorators) || ! (end($this->decorators) instanceof BodyConverterDecorator))) {
+            $decorator = new BodyConverterDecorator();
+            $request = $decorator->decorate($request);
         }
+
+        assert(! is_iterable($request->getBody()));
 
         $response = $this->requester->request(
             $request->getMethod(),
             $request->getUrl(),
             $request->getHeaders(),
-            $body
+            $request->getBody()
         );
 
         self::filterResponse($response);
