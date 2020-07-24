@@ -7,6 +7,7 @@ namespace Solido\Atlante\Requester;
 use Psr\Http\Client\ClientInterface;
 use Psr\Http\Message\RequestFactoryInterface;
 use Psr\Http\Message\StreamFactoryInterface;
+use Solido\Atlante\Requester\Response\ResponseFactory;
 use Solido\Atlante\Requester\Response\ResponseFactoryInterface;
 use Solido\Atlante\Requester\Response\ResponseInterface;
 use function is_callable;
@@ -19,12 +20,12 @@ class PsrClientRequester implements RequesterInterface
     private StreamFactoryInterface $streamFactory;
     private ResponseFactoryInterface $responseFactory;
 
-    public function __construct(ClientInterface $client, RequestFactoryInterface $requestFactory, StreamFactoryInterface $streamFactory, ResponseFactoryInterface $responseFactory)
+    public function __construct(ClientInterface $client, RequestFactoryInterface $requestFactory, StreamFactoryInterface $streamFactory, ?ResponseFactoryInterface $responseFactory = null)
     {
         $this->client = $client;
         $this->requestFactory = $requestFactory;
         $this->streamFactory = $streamFactory;
-        $this->responseFactory = $responseFactory;
+        $this->responseFactory = $responseFactory ?? new ResponseFactory();
     }
 
     /**
