@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Solido\Atlante\Http;
 
-use Closure;
 use Solido\Atlante\Requester\Decorator\DecoratorInterface;
 use Solido\Atlante\Requester\Exception\BadRequestException;
 use Solido\Atlante\Requester\Exception\InvalidRequestException;
@@ -14,7 +13,6 @@ use Solido\Atlante\Requester\Response\BadResponse;
 use Solido\Atlante\Requester\Response\InvalidResponse;
 use Solido\Atlante\Requester\Response\ResponseFactory;
 use Solido\Atlante\Requester\Response\ResponseInterface;
-use Traversable;
 use function http_build_query;
 use function in_array;
 use function is_iterable;
@@ -49,22 +47,6 @@ class Client implements ClientInterface
     public function get(string $path, ?array $headers = null): ResponseInterface
     {
         return $this->request('GET', $path, null, $headers);
-    }
-
-    /**
-     * Performs a merge-patch request to the API service using the PATCH method.
-     *
-     * @param array|string|resource|Closure<string>|Traversable<string>|null $requestData
-     * @param string[]|string[][]|null                                       $headers
-     *
-     * @phpstan-param array|string|resource|Closure(): string|Traversable<string>|null $requestData
-     */
-    public function mergePatch(string $path, $requestData = null, ?array $headers = null): ResponseInterface
-    {
-        $headers = new HeaderBag($headers ?? []);
-        $headers->set('content-type', 'application/merge-patch+json');
-
-        return $this->request('PATCH', $path, $requestData, $headers->all());
     }
 
     /** {@inheritdoc} */
