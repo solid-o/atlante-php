@@ -29,14 +29,16 @@ class BodyConverterDecoratorTest extends TestCase
     }
 
     /**
-     * @param array|string|resource|iterable<string|resource>|Closure $given
+     * @param array|string|resource|Closure|iterable<string>|null $given
+     * @phpstan-param array|string|resource|Closure(): string|iterable<string>|null $given
+     *
+     * @param null|string|resource $expected
      *
      * @dataProvider provideDecorateCases
      */
-    public function testDecorate($given, ?string $expected): void
+    public function testDecorateBody($given, $expected): void
     {
         $decorator = new BodyConverterDecorator();
-        // @phpstan-ignore-next-line
         $decorated = $decorator->decorate(new Request('GET', '/example.com', null, $given));
 
         $body = $decorated->getBody();
@@ -48,7 +50,7 @@ class BodyConverterDecoratorTest extends TestCase
         yield ['foobar', 'foobar'];
         yield [$a = ['foo' => 'bar', 'bar' => ['foo', 'foobar']], json_encode($a, JSON_THROW_ON_ERROR)];
         yield [static fn (): string => 'foobar', 'foobar'];
-        yield [stream_get_contents(fopen('data://text/plain,foobar', 'rb')), 'foobar'];
+        yield [$resource = fopen('data://text/plain,foobar', 'rb'), $resource];
 
         yield [
             // @phpcs:ignore Squiz.Arrays.ArrayDeclaration.ValueNoNewline
@@ -69,7 +71,9 @@ class BodyConverterDecoratorTest extends TestCase
     {
         $decorator = new BodyConverterDecorator();
         // @phpstan-ignore-next-line
-        $decorator->decorate(new Request('GET', '/example.com', null, static fn () => (new RuntimeException())));
+        $decorator->decorate(new Request('GET', '/example.com', null, static function () {
+            throw new RuntimeException("This exception should not be triggered");
+        }));
     }
 
     /**
