@@ -44,7 +44,7 @@ class Request
     }
 
     /**
-     * @return array|string|resource|Closure|iterable<string>|null
+     * @return array|string|resource|Closure<string>|iterable<string>|null
      *
      * @phpstan-return array|string|resource|Closure(): string|iterable<string>|null
      */

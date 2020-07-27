@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Solido\Atlante\Http;
 
+use Closure;
+use ReflectionFunction;
 use Solido\Atlante\Requester\Decorator\BodyConverterDecorator;
 use Solido\Atlante\Requester\Decorator\DecoratorInterface;
 use Solido\Atlante\Requester\Exception\BadRequestException;
@@ -14,11 +16,17 @@ use Solido\Atlante\Requester\Response\BadResponse;
 use Solido\Atlante\Requester\Response\InvalidResponse;
 use Solido\Atlante\Requester\Response\ResponseFactory;
 use Solido\Atlante\Requester\Response\ResponseInterface;
+use TypeError;
 use function assert;
-use function end;
+use function get_debug_type;
 use function in_array;
+use function is_array;
 use function is_callable;
 use function is_iterable;
+use function is_resource;
+use function is_string;
+use function Safe\sprintf;
+use function stream_get_meta_data;
 
 class Client implements ClientInterface
 {
@@ -84,12 +92,7 @@ class Client implements ClientInterface
             $request = $decorator->decorate($request);
         }
 
-        $body = $request->getBody();
-        if ((is_iterable($body) || is_callable($body)) && (empty($this->decorators) || ! (end($this->decorators) instanceof BodyConverterDecorator))) {
-            $decorator = new BodyConverterDecorator();
-            $request = $decorator->decorate($request);
-        }
-
+        $request = self::normalizeRequestBody($request);
         assert(! is_iterable($request->getBody()));
 
         $response = $this->requester->request(
@@ -109,6 +112,45 @@ class Client implements ClientInterface
         $this->responseFactory = $factory;
 
         return $this;
+    }
+
+    /**
+     * Convert Request body to null|string|resource|\Closure(): string
+     */
+    protected static function normalizeRequestBody(Request $request): Request
+    {
+        $body = $request->getBody();
+
+        if ($body === null || is_string($body) || (is_resource($body) && is_array(@stream_get_meta_data($body)))) {
+            return $request;
+        }
+
+        $doNormalizeBody = static function (Request $request): Request {
+            $decorator = new BodyConverterDecorator();
+
+            return $decorator->decorate($request);
+        };
+
+        if (is_callable($body)) {
+            if (! $body instanceof Closure) {
+                $body = Closure::fromCallable($body);
+            }
+
+            $refl = new ReflectionFunction($body);
+            $returnType = $refl->getReturnType();
+            if ($returnType !== null && (string) $returnType === 'string') {
+                // if Closure will return a string (accepted by Requesters) return Request untouched
+                return $request;
+            }
+
+            return $doNormalizeBody($request);
+        }
+
+        if (is_iterable($body)) {
+            return $doNormalizeBody($request);
+        }
+
+        throw new TypeError(sprintf('Given request body has to be a string, a stream resource, a function that returns a string, a generator yielding strings or an iterable of strings, "%s" given', __METHOD__, get_debug_type($body)));
     }
 
     protected static function filterResponse(ResponseInterface $response): void
