@@ -19,7 +19,9 @@ class AcceptFallbackDecorator implements DecoratorInterface
     public function decorate(Request $request): Request
     {
         $headers = new HeaderBag($request->getHeaders());
-        $headers->set('accept', $this->accept, true);
+        if (! $headers->has('accept')) {
+            $headers->set('accept', $this->accept, true);
+        }
 
         return new Request($request->getMethod(), $request->getUrl(), $headers->all(), $request->getBody());
     }
