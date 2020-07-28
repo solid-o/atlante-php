@@ -11,11 +11,9 @@ use RuntimeException;
 use Solido\Atlante\Requester\Decorator\BodyConverterDecorator;
 use Solido\Atlante\Requester\Request;
 use UnexpectedValueException;
-
 use function is_callable;
 use function json_encode;
 use function Safe\fopen;
-use function Safe\stream_get_contents;
 use const JSON_THROW_ON_ERROR;
 
 class BodyConverterDecoratorTest extends TestCase
@@ -30,10 +28,9 @@ class BodyConverterDecoratorTest extends TestCase
 
     /**
      * @param array|string|resource|Closure|iterable<string>|null $given
+     * @param string|resource|null $expected
+     *
      * @phpstan-param array|string|resource|Closure(): string|iterable<string>|null $given
-     *
-     * @param null|string|resource $expected
-     *
      * @dataProvider provideDecorateCases
      */
     public function testDecorateBody($given, $expected): void
@@ -70,17 +67,16 @@ class BodyConverterDecoratorTest extends TestCase
     public function testDeferredCallable(): void
     {
         $decorator = new BodyConverterDecorator();
-        // @phpstan-ignore-next-line
         $decorator->decorate(new Request('GET', '/example.com', null, static function () {
-            throw new RuntimeException("This exception should not be triggered");
+            throw new RuntimeException('This exception should not be triggered');
         }));
     }
 
     /**
-     * @dataProvider provideContents
-     *
      * @param string[]|string[][] $givenHeaders
      * @param string[]|string[][] $expectedHeaders
+     *
+     * @dataProvider provideContents
      */
     public function testContentType(?array $givenHeaders, array $expectedHeaders, string $expectedContent): void
     {
@@ -103,13 +99,15 @@ class BodyConverterDecoratorTest extends TestCase
     {
         $decorator = new BodyConverterDecorator();
         $decorated = $decorator->decorate(new Request('GET', '/example.com', ['content-type' => 'multipart/form-data'], ['foo' => 'bar']));
-        
+
         $this->expectException(UnexpectedValueException::class);
         $this->expectExceptionMessage('Unable to convert Request content body: expected "application/json" or "application/x-www-form-urlencoded" `content-type` header, "multipart/form-data" given');
 
         $body = $decorated->getBody();
-        if (is_callable($body)) {
-            $body = $body();
+        if (! is_callable($body)) {
+            return;
         }
+
+        $body = $body();
     }
 }
