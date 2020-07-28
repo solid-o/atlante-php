@@ -24,8 +24,8 @@ class ResponseFactory implements ResponseFactoryInterface
      */
     public function fromResponse($response): ResponseInterface
     {
-        $statusCode = $response->getStatusCode();
         $data = static::decodeData($response);
+        $statusCode = $response->getStatusCode();
 
         if (is_object($data)) {
             if ($statusCode < 300 && $statusCode >= 200) {
