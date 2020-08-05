@@ -8,13 +8,16 @@ use Closure;
 use ReflectionFunction;
 use Solido\Atlante\Requester\Decorator\BodyConverterDecorator;
 use Solido\Atlante\Requester\Decorator\DecoratorInterface;
+use Solido\Atlante\Requester\Exception\AccessDeniedException;
 use Solido\Atlante\Requester\Exception\BadRequestException;
 use Solido\Atlante\Requester\Exception\InvalidRequestException;
+use Solido\Atlante\Requester\Exception\NotFoundException;
 use Solido\Atlante\Requester\Request;
 use Solido\Atlante\Requester\RequesterInterface;
+use Solido\Atlante\Requester\Response\AccessDeniedResponse;
 use Solido\Atlante\Requester\Response\BadResponse;
 use Solido\Atlante\Requester\Response\InvalidResponse;
-use Solido\Atlante\Requester\Response\ResponseFactory;
+use Solido\Atlante\Requester\Response\NotFoundResponse;
 use Solido\Atlante\Requester\Response\ResponseInterface;
 use TypeError;
 use function assert;
@@ -34,8 +37,6 @@ class Client implements ClientInterface
 
     /** @var iterable<DecoratorInterface> */
     protected $decorators;
-
-    protected ?ResponseFactory $responseFactory = null;
 
     /**
      * @param iterable<DecoratorInterface>|null $requestDecorators Ordered list of Decorators
@@ -107,13 +108,6 @@ class Client implements ClientInterface
         return $response;
     }
 
-    public function setResponseFactory(?ResponseFactory $factory): self
-    {
-        $this->responseFactory = $factory;
-
-        return $this;
-    }
-
     /**
      * Convert Request body to null|string|resource|\Closure(): string
      */
@@ -155,12 +149,15 @@ class Client implements ClientInterface
 
     protected static function filterResponse(ResponseInterface $response): void
     {
-        if ($response instanceof BadResponse) {
-            throw new BadRequestException($response);
-        }
-
-        if ($response instanceof InvalidResponse) {
-            throw new InvalidRequestException($response);
+        switch (true) {
+            case $response instanceof BadResponse:
+                throw new BadRequestException($response);
+            case $response instanceof AccessDeniedResponse:
+                throw new AccessDeniedException($response);
+            case $response instanceof NotFoundResponse:
+                throw new NotFoundException($response);
+            case $response instanceof InvalidResponse:
+                throw new InvalidRequestException($response);
         }
     }
 }

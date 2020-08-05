@@ -32,8 +32,13 @@ class ResponseFactory implements ResponseFactoryInterface
                 return new Response($statusCode, $data);
             }
 
-            if ($statusCode === 400) {
-                return new BadResponse($data);
+            switch ($statusCode) {
+                case 400:
+                    return new BadResponse($data);
+                case 403:
+                    return new AccessDeniedResponse($data);
+                case 404:
+                    return new NotFoundResponse($data);
             }
         }
 

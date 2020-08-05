@@ -5,20 +5,19 @@ declare(strict_types=1);
 namespace Solido\Atlante\Requester\Exception;
 
 use Solido\Atlante\Requester\Response\BadResponse;
-use Solido\Atlante\Requester\Response\ResponseInterface;
+use function assert;
 
 class BadRequestException extends AbstractException
 {
-    /** @var BadResponse */
-    protected ResponseInterface $response;
-
     public function __construct(BadResponse $response)
     {
-        $this->response = $response;
+        parent::__construct($response);
     }
 
     public function getResponse(): BadResponse
     {
+        assert($this->response instanceof BadResponse);
+
         return $this->response;
     }
 }

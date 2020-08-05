@@ -6,7 +6,7 @@ namespace Solido\Atlante\Requester\Response;
 
 use function assert;
 
-class BadResponse extends AbstractResponse
+class BadResponse extends InvalidResponse
 {
     private const HTTP_STATUS = 400;
 

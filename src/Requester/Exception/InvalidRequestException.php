@@ -5,20 +5,19 @@ declare(strict_types=1);
 namespace Solido\Atlante\Requester\Exception;
 
 use Solido\Atlante\Requester\Response\InvalidResponse;
-use Solido\Atlante\Requester\Response\ResponseInterface;
+use function assert;
 
 class InvalidRequestException extends AbstractException
 {
-    /** @var InvalidResponse */
-    protected ResponseInterface $response;
-
     public function __construct(InvalidResponse $response)
     {
-        $this->response = $response;
+        parent::__construct($response);
     }
 
     public function getResponse(): InvalidResponse
     {
+        assert($this->response instanceof InvalidResponse);
+
         return $this->response;
     }
 }
