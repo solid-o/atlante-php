@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Solido\Atlante\Requester\Response;
 
+use JsonException;
 use Psr\Http\Message\ResponseInterface as PsrResponseInterface;
-use Safe\Exceptions\JsonException;
 use Solido\Atlante\Http\HeaderBag;
 use Symfony\Contracts\HttpClient\ResponseInterface as SymfonyHttpClientResponse;
 use TypeError;
@@ -13,9 +13,10 @@ use function assert;
 use function get_debug_type;
 use function is_object;
 use function is_string;
-use function Safe\json_decode;
+use function json_decode;
 use function Safe\sprintf;
 use function strpos;
+use const JSON_THROW_ON_ERROR;
 
 class ResponseFactory implements ResponseFactoryInterface
 {
@@ -64,9 +65,10 @@ class ResponseFactory implements ResponseFactoryInterface
 
         $contentType = $headers->get('content-type', 'text/html');
         assert(is_string($contentType));
-        if (strpos('application/json', $contentType) === 0) {
+
+        if (strpos($contentType, 'application/json') === 0) {
             try {
-                $data = json_decode($data, false);
+                $data = json_decode($data, false, 512, JSON_THROW_ON_ERROR);
             } catch (JsonException $e) {
                 // @ignoreException
             }
