@@ -10,9 +10,10 @@ class NotFoundResponse extends InvalidResponse
 
     /**
      * @param object|string $data
+     * @param array<string, string|string[]> $headers
      */
-    public function __construct($data)
+    public function __construct($data, array $headers)
     {
-        parent::__construct(self::HTTP_STATUS, $data);
+        parent::__construct(self::HTTP_STATUS, $headers, $data);
     }
 }

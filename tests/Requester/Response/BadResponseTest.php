@@ -16,7 +16,7 @@ class BadResponseTest extends TestCase
             'name' => 'foo',
             'errors' => [],
             'children' => [],
-        ]);
+        ], ['Content-Type' => 'application/json']);
 
         self::assertSame(400, $response->getStatusCode());
 

@@ -30,20 +30,22 @@ class ResponseFactory implements ResponseFactoryInterface
 
         if (is_object($data)) {
             if ($statusCode < 300 && $statusCode >= 200) {
-                return new Response($statusCode, $data);
+                return new Response($statusCode, $response->getHeaders(), $data);
             }
 
             switch ($statusCode) {
                 case 400:
-                    return new BadResponse($data);
+                    return new BadResponse($data, $response->getHeaders());
+
                 case 403:
-                    return new AccessDeniedResponse($data);
+                    return new AccessDeniedResponse($data, $response->getHeaders());
+
                 case 404:
-                    return new NotFoundResponse($data);
+                    return new NotFoundResponse($data, $response->getHeaders());
             }
         }
 
-        return new InvalidResponse($statusCode, $data);
+        return new InvalidResponse($statusCode, $response->getHeaders(), $data);
     }
 
     /**

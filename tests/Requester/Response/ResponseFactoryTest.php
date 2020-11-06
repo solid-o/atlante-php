@@ -96,7 +96,7 @@ class ResponseFactoryTest extends TestCase
         $requesterResponse = [];
         $factory = new ResponseFactory();
         // @phpstan-ignore-next-line
-        $response = $factory->fromResponse($requesterResponse);
+        $factory->fromResponse($requesterResponse);
     }
 
     /**
