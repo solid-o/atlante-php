@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Solido\Atlante\Requester\Decorator;
 
 use Solido\Atlante\Requester\Request;
+
 use function http_build_query;
 use function parse_str;
 use function rtrim;

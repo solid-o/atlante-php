@@ -7,6 +7,7 @@ namespace Solido\Atlante\Requester\Exception;
 use RuntimeException;
 use Solido\Atlante\Requester\Response\ResponseInterface;
 use Throwable;
+
 use function Safe\sprintf;
 
 abstract class AbstractException extends RuntimeException

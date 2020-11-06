@@ -10,6 +10,7 @@ use ReflectionFunction;
 use Solido\Atlante\Http\HeaderBag;
 use Solido\Atlante\Requester\Request;
 use UnexpectedValueException;
+
 use function get_debug_type;
 use function http_build_query;
 use function is_array;
@@ -21,6 +22,7 @@ use function Safe\json_encode;
 use function Safe\sprintf;
 use function stream_get_meta_data;
 use function strpos;
+
 use const PHP_QUERY_RFC1738;
 
 /**

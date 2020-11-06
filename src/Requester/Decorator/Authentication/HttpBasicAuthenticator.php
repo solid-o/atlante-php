@@ -6,6 +6,7 @@ namespace Solido\Atlante\Requester\Decorator\Authentication;
 
 use Solido\Atlante\Requester\Decorator\DecoratorInterface;
 use Solido\Atlante\Requester\Request;
+
 use function base64_encode;
 
 class HttpBasicAuthenticator implements DecoratorInterface

@@ -20,6 +20,7 @@ use Solido\Atlante\Requester\Response\InvalidResponse;
 use Solido\Atlante\Requester\Response\NotFoundResponse;
 use Solido\Atlante\Requester\Response\ResponseInterface;
 use TypeError;
+
 use function assert;
 use function get_debug_type;
 use function in_array;
@@ -152,10 +153,13 @@ class Client implements ClientInterface
         switch (true) {
             case $response instanceof BadResponse:
                 throw new BadRequestException($response);
+
             case $response instanceof AccessDeniedResponse:
                 throw new AccessDeniedException($response);
+
             case $response instanceof NotFoundResponse:
                 throw new NotFoundException($response);
+
             case $response instanceof InvalidResponse:
                 throw new InvalidRequestException($response);
         }

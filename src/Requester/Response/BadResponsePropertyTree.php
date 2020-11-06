@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Solido\Atlante\Requester\Response;
 
 use InvalidArgumentException;
+
 use function array_map;
 use function get_debug_type;
 use function is_array;

@@ -6,6 +6,7 @@ namespace Solido\Atlante\Requester;
 
 use RuntimeException;
 use Solido\Atlante\Requester\Response\ResponseInterface;
+
 use function array_shift;
 
 final class MockRequester implements RequesterInterface

@@ -8,6 +8,7 @@ use Closure;
 use InvalidArgumentException;
 use Solido\Atlante\Http\HeaderBag;
 use Traversable;
+
 use function method_exists;
 use function Safe\sprintf;
 use function ucfirst;

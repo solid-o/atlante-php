@@ -10,6 +10,7 @@ use Psr\Http\Message\StreamFactoryInterface;
 use Solido\Atlante\Requester\Response\ResponseFactory;
 use Solido\Atlante\Requester\Response\ResponseFactoryInterface;
 use Solido\Atlante\Requester\Response\ResponseInterface;
+
 use function is_callable;
 use function is_resource;
 

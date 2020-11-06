@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Solido\Atlante\Requester\Exception;
 
 use Solido\Atlante\Requester\Response\InvalidResponse;
+
 use function assert;
 
 class InvalidRequestException extends AbstractException

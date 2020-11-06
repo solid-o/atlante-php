@@ -13,6 +13,7 @@ use function Safe\preg_replace;
 use function Safe\substr;
 use function strtolower;
 use function trim;
+
 use const PREG_SET_ORDER;
 
 /**

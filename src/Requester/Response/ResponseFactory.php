@@ -9,6 +9,7 @@ use Psr\Http\Message\ResponseInterface as PsrResponseInterface;
 use Solido\Atlante\Http\HeaderBag;
 use Symfony\Contracts\HttpClient\ResponseInterface as SymfonyHttpClientResponse;
 use TypeError;
+
 use function assert;
 use function get_debug_type;
 use function is_object;
@@ -16,6 +17,7 @@ use function is_string;
 use function json_decode;
 use function Safe\sprintf;
 use function strpos;
+
 use const JSON_THROW_ON_ERROR;
 
 class ResponseFactory implements ResponseFactoryInterface

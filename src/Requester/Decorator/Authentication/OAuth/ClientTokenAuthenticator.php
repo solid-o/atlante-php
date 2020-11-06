@@ -10,6 +10,7 @@ use Solido\Atlante\Requester\Request;
 use Solido\Atlante\Requester\RequesterInterface;
 use Solido\Atlante\Requester\Response\ResponseInterface;
 use Solido\Atlante\Storage\StorageInterface;
+
 use function assert;
 use function http_build_query;
 use function is_object;
@@ -63,7 +64,7 @@ class ClientTokenAuthenticator implements DecoratorInterface
             return $item->get();
         }
 
-        [$body, $headers] = $this->buildTokenRequest([ 'grant_type' => 'client_credentials' ]);
+        [$body, $headers] = $this->buildTokenRequest(['grant_type' => 'client_credentials']);
         $response = $this->request($body, $headers);
 
         if ($response->getStatusCode() !== 200) {

@@ -6,6 +6,7 @@ namespace Solido\Atlante\Storage;
 
 use Closure;
 use Safe\DateTime;
+
 use function serialize;
 use function unserialize;
 
@@ -54,7 +55,7 @@ abstract class AbstractStorage implements StorageInterface
         $isHit = $this->hasItem($key);
 
         if ($isHit) {
-            $value = unserialize($this->doGetItem($key), [ 'allowed_classes' => true ]);
+            $value = unserialize($this->doGetItem($key), ['allowed_classes' => true]);
         }
 
         $r = $this->createCacheItem;
