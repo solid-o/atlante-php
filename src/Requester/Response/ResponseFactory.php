@@ -12,6 +12,7 @@ use TypeError;
 
 use function assert;
 use function get_debug_type;
+use function is_array;
 use function is_object;
 use function is_string;
 use function json_decode;
@@ -30,7 +31,7 @@ class ResponseFactory implements ResponseFactoryInterface
         $data = static::decodeData($response);
         $statusCode = $response->getStatusCode();
 
-        if (is_object($data)) {
+        if (is_array($data) || is_object($data)) {
             if ($statusCode < 300 && $statusCode >= 200) {
                 return new Response($statusCode, $response->getHeaders(), $data);
             }
