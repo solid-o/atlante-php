@@ -38,13 +38,13 @@ class ResponseFactory implements ResponseFactoryInterface
 
             switch ($statusCode) {
                 case 400:
-                    return new BadResponse($data, $response->getHeaders());
+                    return new BadResponse($response->getHeaders(), $data);
 
                 case 403:
-                    return new AccessDeniedResponse($data, $response->getHeaders());
+                    return new AccessDeniedResponse($response->getHeaders(), $data);
 
                 case 404:
-                    return new NotFoundResponse($data, $response->getHeaders());
+                    return new NotFoundResponse($response->getHeaders(), $data);
             }
         }
 
@@ -54,7 +54,7 @@ class ResponseFactory implements ResponseFactoryInterface
     /**
      * @param PsrResponseInterface|SymfonyHttpClientResponse $response
      *
-     * @return object|string
+     * @return mixed[]|object|string
      */
     protected static function decodeData($response)
     {

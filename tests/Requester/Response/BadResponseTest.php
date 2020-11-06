@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Tests\Requester\Response;
+namespace Solido\Atlante\Tests\Requester\Response;
 
 use PHPUnit\Framework\TestCase;
 use Solido\Atlante\Requester\Response\BadResponse;
@@ -12,11 +12,11 @@ class BadResponseTest extends TestCase
 {
     public function testCanCreate(): void
     {
-        $response = new BadResponse([
+        $response = new BadResponse(['Content-Type' => 'application/json'], [
             'name' => 'foo',
             'errors' => [],
             'children' => [],
-        ], ['Content-Type' => 'application/json']);
+        ]);
 
         self::assertSame(400, $response->getStatusCode());
 

@@ -9,10 +9,10 @@ class NotFoundResponse extends InvalidResponse
     private const HTTP_STATUS = 404;
 
     /**
-     * @param object|string $data
      * @param array<string, string|string[]> $headers
+     * @param mixed[]|object|string $data
      */
-    public function __construct($data, array $headers)
+    public function __construct(array $headers, $data)
     {
         parent::__construct(self::HTTP_STATUS, $headers, $data);
     }

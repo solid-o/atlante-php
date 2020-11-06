@@ -24,9 +24,9 @@ class ArrayUtils
         foreach ($input as $key => $value) {
             if (! is_int($key)) {
                 if (strpos($key, '_') === 0) {
-                    $key = '_'.u($key)->camel();
+                    $key = '_' . u($key)->camel();
                 } else {
-                    $key = (string)u($key)->camel();
+                    $key = (string) u($key)->camel();
                 }
             }
 
@@ -53,7 +53,7 @@ class ArrayUtils
         foreach ($input as $key => $value) {
             if (! is_int($key)) {
                 if (strpos($key, '_') === 0) {
-                    $key = '_'.u($key)->snake();
+                    $key = '_' . u($key)->snake();
                 } else {
                     $key = (string) u($key)->snake();
                 }

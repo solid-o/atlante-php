@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Tests\Requester\Response;
+namespace Solido\Atlante\Tests\Requester\Response;
 
 use Generator;
 use PHPUnit\Framework\TestCase;

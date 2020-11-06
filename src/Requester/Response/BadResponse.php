@@ -14,10 +14,10 @@ class BadResponse extends InvalidResponse
     protected $data;
 
     /**
-     * @param object|array<string,mixed>|string $data
      * @param array<string, string|string[]> $headers
+     * @param mixed[]|object|string $data
      */
-    public function __construct($data, array $headers)
+    public function __construct(array $headers, $data)
     {
         $data = BadResponsePropertyTree::parse($data);
 
