@@ -7,6 +7,7 @@ namespace Solido\Atlante\Storage;
 use Closure;
 use Safe\DateTime;
 
+use function Safe\sprintf;
 use function serialize;
 use function unserialize;
 
@@ -77,7 +78,7 @@ abstract class AbstractStorage implements StorageInterface
         $key = $item->getKey();
         $expiry = ($this->getExpiration)($item);
 
-        if ($expiry && new DateTime('@' . $expiry) < new DateTime()) {
+        if ($expiry && DateTime::createFromFormat('U.u', sprintf('%.3f', $expiry)) < new DateTime()) {
             $this->deleteItem($key);
 
             return true;
