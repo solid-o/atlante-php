@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Solido\Atlante\Requester;
 
-use Solido\Atlante\Requester\Response\ResponseFactory;
 use Solido\Atlante\Requester\Response\ResponseFactoryInterface;
 use Solido\Atlante\Requester\Response\ResponseInterface;
+use Solido\Atlante\Requester\Response\SymfonyHttpClientResponseFactory;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 class SymfonyHttpClientRequester implements RequesterInterface
@@ -17,7 +17,7 @@ class SymfonyHttpClientRequester implements RequesterInterface
     public function __construct(HttpClientInterface $client, ?ResponseFactoryInterface $responseFactory = null)
     {
         $this->client = $client;
-        $this->responseFactory = $responseFactory ?? new ResponseFactory();
+        $this->responseFactory = $responseFactory ?? new SymfonyHttpClientResponseFactory();
     }
 
     /**

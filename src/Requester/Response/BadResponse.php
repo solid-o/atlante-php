@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Solido\Atlante\Requester\Response;
 
+use Solido\Atlante\Http\HeaderBag;
+
 use function assert;
 
 class BadResponse extends InvalidResponse
@@ -14,10 +16,9 @@ class BadResponse extends InvalidResponse
     protected $data;
 
     /**
-     * @param array<string, string|string[]> $headers
      * @param mixed[]|object|string $data
      */
-    public function __construct(array $headers, $data)
+    public function __construct(HeaderBag $headers, $data)
     {
         $data = BadResponsePropertyTree::parse($data);
 

@@ -14,13 +14,12 @@ abstract class AbstractResponse implements ResponseInterface
     protected int $statusCode;
 
     /**
-     * @param array<string, string|string[]> $headers
      * @param mixed[]|object|string $data
      */
-    public function __construct(int $statusCode, array $headers, $data)
+    public function __construct(int $statusCode, HeaderBag $headers, $data)
     {
         $this->statusCode = $statusCode;
-        $this->headers = new HeaderBag($headers);
+        $this->headers = $headers;
         $this->data = $data;
     }
 
