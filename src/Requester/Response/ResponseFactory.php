@@ -31,24 +31,30 @@ class ResponseFactory implements ResponseFactoryInterface
         $data = static::decodeData($response);
         $statusCode = $response->getStatusCode();
 
+        if ($response instanceof SymfonyHttpClientResponse) {
+            $headers = $response->getHeaders(false);
+        } else {
+            $headers = $response->getHeaders();
+        }
+
         if (is_array($data) || is_object($data)) {
             if ($statusCode < 300 && $statusCode >= 200) {
-                return new Response($statusCode, $response->getHeaders(), $data);
+                return new Response($statusCode, $headers, $data);
             }
 
             switch ($statusCode) {
                 case 400:
-                    return new BadResponse($response->getHeaders(), $data);
+                    return new BadResponse($headers, $data);
 
                 case 403:
-                    return new AccessDeniedResponse($response->getHeaders(), $data);
+                    return new AccessDeniedResponse($headers, $data);
 
                 case 404:
-                    return new NotFoundResponse($response->getHeaders(), $data);
+                    return new NotFoundResponse($headers, $data);
             }
         }
 
-        return new InvalidResponse($statusCode, $response->getHeaders(), $data);
+        return new InvalidResponse($statusCode, $headers, $data);
     }
 
     /**
