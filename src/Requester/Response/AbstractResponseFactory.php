@@ -45,7 +45,7 @@ abstract class AbstractResponseFactory implements ResponseFactoryInterface
     /**
      * @return mixed[]|object|string
      */
-    private static function decodeData(HeaderBag $headers, string $data)
+    protected static function decodeData(HeaderBag $headers, string $data)
     {
         $contentType = $headers->get('content-type', 'text/html');
         assert(is_string($contentType));
