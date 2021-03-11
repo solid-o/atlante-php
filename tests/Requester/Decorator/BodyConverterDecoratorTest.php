@@ -39,7 +39,12 @@ class BodyConverterDecoratorTest extends TestCase
         $decorated = $decorator->decorate(new Request('GET', '/example.com', null, $given));
 
         $body = $decorated->getBody();
-        self::assertEquals($expected, is_callable($body) ? $body() : $body);
+        if (is_callable($body)) {
+            self::assertEquals($expected, $body());
+            self::assertEquals('', $body());
+        } else {
+            self::assertEquals($expected, $body);
+        }
     }
 
     public static function provideDecorateCases(): Generator

@@ -5,12 +5,15 @@ declare(strict_types=1);
 namespace Solido\Atlante\Requester\Decorator;
 
 use Closure;
+use Generator;
 use InvalidArgumentException;
 use ReflectionFunction;
 use Solido\Atlante\Http\HeaderBag;
 use Solido\Atlante\Requester\Request;
 use UnexpectedValueException;
 
+use function assert;
+use function feof;
 use function get_debug_type;
 use function http_build_query;
 use function is_array;
@@ -18,9 +21,12 @@ use function is_callable;
 use function is_iterable;
 use function is_resource;
 use function is_string;
+use function Safe\fread;
 use function Safe\json_encode;
 use function Safe\sprintf;
+use function Safe\substr;
 use function stream_get_meta_data;
+use function strlen;
 use function strpos;
 
 use const PHP_QUERY_RFC1738;
@@ -39,28 +45,46 @@ class BodyConverterDecorator implements DecoratorInterface
         $headers = new HeaderBag($request->getHeaders());
 
         if ($body !== null && ! is_string($body)) {
-            $doHandle = function () use ($body, $headers) {
+            $generator = function (?int $length = null) use ($body, $headers): Generator {
                 $body = $this->prepare($body);
 
                 if (is_iterable($body)) {
                     $body = self::encodeIterable($body, $headers);
                 }
 
-                return $body;
+                if ($length === null) {
+                    yield $body;
+
+                    return;
+                }
+
+                if (is_resource($body)) {
+                    while (! feof($body)) {
+                        yield fread($body, $length);
+                    }
+                } else {
+                    assert(is_string($body));
+
+                    $strlen = strlen($body);
+                    for ($i = 0; $i < $strlen; $i += $length) {
+                        yield substr($body, $i, $length);
+                    }
+                }
+
+                yield '';
             };
 
-            if (is_callable($body)) {
-                if (! $body instanceof Closure) {
-                    $body = Closure::fromCallable($body);
+            $doHandle = static function (?int $length = null) use (&$generator) {
+                if (is_callable($generator)) {
+                    $generator = $generator($length);
+                } else {
+                    $generator->next();
                 }
 
-                $refl = new ReflectionFunction($body);
-                $returnType = $refl->getReturnType();
-                // @phpstan-ignore-next-line
-                if ($returnType === null || $returnType->getName() !== 'string') {
-                    $body = $doHandle;
-                }
-            } elseif (! is_resource($body) || ! is_array(@stream_get_meta_data($body))) {
+                return $generator->valid() ? $generator->current() : '';
+            };
+
+            if (is_callable($body) || ! is_resource($body) || ! is_array(@stream_get_meta_data($body))) {
                 $body = $doHandle;
             }
         }
@@ -71,7 +95,7 @@ class BodyConverterDecorator implements DecoratorInterface
     /**
      * @param iterable<string> $body
      */
-    private static function encodeIterable($body, HeaderBag $headers): string
+    private static function encodeIterable(iterable $body, HeaderBag $headers): string
     {
         $contentType = $headers->get('content-type');
         // add content-type if not specified
