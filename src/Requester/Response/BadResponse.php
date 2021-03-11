@@ -12,9 +12,6 @@ class BadResponse extends InvalidResponse
 {
     private const HTTP_STATUS = 400;
 
-    /** @var BadResponsePropertyTree */
-    protected $data;
-
     /**
      * @param mixed[]|object|string $data
      */
