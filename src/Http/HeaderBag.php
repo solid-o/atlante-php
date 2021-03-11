@@ -315,7 +315,7 @@ class HeaderBag implements IteratorAggregate, Countable
      *
      * @return array<string, mixed> An array representing the attribute values
      */
-    protected function parseCacheControl(string $header)
+    protected function parseCacheControl(string $header): array
     {
         $parts = HeaderUtils::split($header, ',=');
 

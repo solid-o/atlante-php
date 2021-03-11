@@ -37,7 +37,7 @@ class Client implements ClientInterface
     protected RequesterInterface $requester;
 
     /** @var iterable<DecoratorInterface> */
-    protected $decorators;
+    protected iterable $decorators;
 
     /**
      * @param iterable<DecoratorInterface>|null $requestDecorators Ordered list of Decorators
