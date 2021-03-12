@@ -18,7 +18,7 @@ use const JSON_THROW_ON_ERROR;
 
 class BodyConverterDecoratorTest extends TestCase
 {
-    public function testNewIstanceIsReturned(): void
+    public function testNewInstanceIsReturned(): void
     {
         $decorator = new BodyConverterDecorator();
         $decorated = $decorator->decorate($request = new Request('GET', '/foo', null, 'foo'));
@@ -48,6 +48,7 @@ class BodyConverterDecoratorTest extends TestCase
         yield [$a = ['foo' => 'bar', 'bar' => ['foo', 'foobar']], json_encode($a, JSON_THROW_ON_ERROR)];
         yield [static fn (): string => 'foobar', 'foobar'];
         yield [$resource = fopen('data://text/plain,foobar', 'rb'), $resource];
+        yield [$a = ['foo' => true, 'bar' => ['foo', 1, .12, false]], json_encode($a, JSON_THROW_ON_ERROR)];
 
         yield [
             // @phpcs:ignore Squiz.Arrays.ArrayDeclaration.ValueNoNewline

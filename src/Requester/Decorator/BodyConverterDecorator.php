@@ -106,7 +106,7 @@ class BodyConverterDecorator implements DecoratorInterface
      */
     private function prepare($body)
     {
-        if ($body === null || is_string($body)) {
+        if ($body === null || is_scalar($body)) {
             return $body;
         }
 
