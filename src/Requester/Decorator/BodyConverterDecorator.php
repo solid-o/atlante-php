@@ -7,7 +7,6 @@ namespace Solido\Atlante\Requester\Decorator;
 use Closure;
 use Generator;
 use InvalidArgumentException;
-use ReflectionFunction;
 use Solido\Atlante\Http\HeaderBag;
 use Solido\Atlante\Requester\Request;
 use UnexpectedValueException;
@@ -20,6 +19,7 @@ use function is_array;
 use function is_callable;
 use function is_iterable;
 use function is_resource;
+use function is_scalar;
 use function is_string;
 use function Safe\fread;
 use function Safe\json_encode;
@@ -45,6 +45,12 @@ class BodyConverterDecorator implements DecoratorInterface
         $headers = new HeaderBag($request->getHeaders());
 
         if ($body !== null && ! is_string($body)) {
+            $contentType = $headers->get('content-type');
+            if ($contentType === null) { // add content-type if not specified
+                $contentType = 'application/json';
+                $headers->set('content-type', $contentType);
+            }
+
             $generator = function (?int $length = null) use ($body, $headers): Generator {
                 $body = $this->prepare($body);
 
@@ -97,12 +103,7 @@ class BodyConverterDecorator implements DecoratorInterface
      */
     private static function encodeIterable(iterable $body, HeaderBag $headers): string
     {
-        $contentType = $headers->get('content-type');
-        // add content-type if not specified
-        if ($contentType === null) {
-            $contentType = 'application/json';
-            $headers->set('content-type', $contentType);
-        }
+        $contentType = $headers->get('content-type') ?? 'application/x-www-form-urlencoded';
 
         if (strpos($contentType, 'application/json') === 0) {
             $body = json_encode($body);

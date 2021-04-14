@@ -72,14 +72,14 @@ class ClientTokenAuthenticator implements DecoratorInterface
         }
 
         $content = $response->getData();
-        // @phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
+        // @phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
         assert(is_object($content) && isset($content->access_token, $content->expires_in));
 
-        // @phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
+        // @phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
         $token = $content->access_token;
 
         $item->set($token);
-        // @phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
+        // @phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
         $item->expiresAfter($content->expires_in - 60);
         $this->tokenStorage->save($item);
 
