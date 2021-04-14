@@ -9,25 +9,51 @@ jobs:
                 php-version: ['7.4', '8.0']
         name: Test on PHP ${{ matrix.php }}
         steps:
-            -   uses: actions/checkout@v2
+            - uses: actions/checkout@v2
 
-            -   name: Install PHP
-                uses: shivammathur/setup-php@v2
-                with:
-                    php-version: ${{ matrix.php-version }}
-                    extensions: pdo
-                    coverage: pcov
-                    ini-values: zend.assertions=1
+            - name: Install PHP
+              uses: shivammathur/setup-php@v2
+              with:
+                  php-version: ${{ matrix.php-version }}
+                  extensions: pdo
+                  coverage: pcov
+                  ini-values: zend.assertions=1
 
-            -   name: Cache dependencies installed with composer
-                uses: actions/cache@v2
-                with:
-                    path: "~/.composer/cache"
-                    key: php-${{ matrix.php-version }}-composer-locked-${{ hashFiles('composer.lock') }}
-                    restore-keys: php-${{ matrix.php-version }}-composer-locked-
+            - name: Cache dependencies installed with composer
+              uses: actions/cache@v2
+              with:
+                  path: "~/.composer/cache"
+                  key: php-${{ matrix.php-version }}-composer-locked-${{ hashFiles('composer.lock') }}
+                  restore-keys: php-${{ matrix.php-version }}-composer-locked-
 
-            -   name: Install dependencies with composer
-                run: composer update --no-interaction --no-progress --no-suggest
+            - name: Install dependencies with composer
+              run: composer update --no-interaction --no-progress --no-suggest
 
-            -   name: Run PHPUnit
-                run: vendor/bin/phpunit
+            - name: Run PHPUnit
+              run: vendor/bin/phpunit --coverage-clover phpunit/phpunit.coverage.xml --log-junit phpunit/junit.xml
+
+            - name: Set repository name
+              id: repository-name
+              run: >
+                  echo ::set-output name=REPOSITORY_NAME::$(echo $GITHUB_REPOSITORY | tr '/' '_') ;
+                  echo ::set-output name=REPOSITORY_OWNER::$(echo $GITHUB_REPOSITORY | cut -d'/' -f1)
+            - name: fix code coverage paths
+              working-directory: ./phpunit
+              run: |
+                  sed -i 's@'$GITHUB_WORKSPACE'@/github/workspace/@g' phpunit.coverage.xml
+                  sed -i 's@'$GITHUB_WORKSPACE'@/github/workspace/@g' junit.xml
+
+            - name: SonarCloud Scan
+              uses: sonarsource/sonarcloud-github-action@v1.5
+              env:
+                  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+                  SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+              with:
+                  args:
+                      -Dsonar.projectKey=${{ steps.repository-name.outputs.REPOSITORY_NAME }}
+                      -Dsonar.organization=${{ steps.repository-name.outputs.REPOSITORY_OWNER }}
+                      -Dsonar.sources=src
+                      -Dsonar.tests=tests
+                      -Dsonar.php.coverage.reportPaths=phpunit/phpunit.coverage.xml
+                      -Dsonar.php.tests.reportPath=phpunit/junit.xml
+
