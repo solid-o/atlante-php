@@ -85,10 +85,7 @@ class Client implements ClientInterface
             $requestData = null;
         }
 
-        $headerBag = new HeaderBag($headers ?? []);
-        $headerBag->set('Accept', 'application/json', false);
-
-        $request = new Request($method, $path, $headerBag->all(), $requestData);
+        $request = new Request($method, $path, $headers ?? [], $requestData);
 
         foreach ($this->decorators as $decorator) {
             $request = $decorator->decorate($request);
@@ -97,10 +94,15 @@ class Client implements ClientInterface
         $request = self::normalizeRequestBody($request);
         assert(! is_iterable($request->getBody()));
 
+        $headerBag = new HeaderBag($request->getHeaders());
+        if (! $headerBag->has('Accept')) {
+            $headerBag->set('Accept', 'application/json', false);
+        }
+
         $response = $this->requester->request(
             $request->getMethod(),
             $request->getUrl(),
-            $request->getHeaders(),
+            $headerBag->all(),
             $request->getBody()
         );
 
