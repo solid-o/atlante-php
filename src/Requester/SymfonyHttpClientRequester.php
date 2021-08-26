@@ -28,6 +28,7 @@ class SymfonyHttpClientRequester implements RequesterInterface
         $response = $this->client->request($method, $uri, [
             'headers' => $headers,
             'body' => $requestData,
+            'max_redirects' => 0,
         ]);
 
         return $this->responseFactory->fromResponse($response);
