@@ -31,6 +31,8 @@
     "require-dev": {
         "jangregor/phpstan-prophecy": "^0.8.0",
         "laminas/laminas-diactoros": "^2.3",
+        "nyholm/psr7": "^1",
+        "phpspec/prophecy-phpunit": "^2.0",
         "phpunit/phpunit": "^8.1|^9.0",
         "psr/cache": "^1.0",
         "psr/http-client": "^1.0",

@@ -80,11 +80,10 @@ class BodyConverterDecoratorTest extends TestCase
 
     /**
      * @param string[]|string[][] $givenHeaders
-     * @param string[]|string[][] $expectedHeaders
      *
      * @dataProvider provideContents
      */
-    public function testContentType(?array $givenHeaders, array $expectedHeaders, string $expectedContent): void
+    public function testContentType(?array $givenHeaders, string $expectedContent): void
     {
         $decorator = new BodyConverterDecorator();
         $decorated = $decorator->decorate(new Request('GET', '/example.com', $givenHeaders, ['foo' => 'bar', 'bar' => ['bar', 'bar']]));
@@ -95,10 +94,10 @@ class BodyConverterDecoratorTest extends TestCase
 
     public static function provideContents(): Generator
     {
-        yield [['content-type' => 'application/json'], ['content-type' => 'application/json'], '{"foo":"bar","bar":["bar","bar"]}'];
-        yield [null, ['content-type' => 'application/json'], '{"foo":"bar","bar":["bar","bar"]}'];
-        yield [['x-foo' => 'bar'], ['content-type' => 'application/json', 'x-foo' => 'bar'], '{"foo":"bar","bar":["bar","bar"]}'];
-        yield [['content-type' => 'application/x-www-form-urlencoded'], ['content-type' => 'application/x-www-form-urlencoded'], 'foo=bar&bar%5B0%5D=bar&bar%5B1%5D=bar'];
+        yield [['content-type' => 'application/json'], '{"foo":"bar","bar":["bar","bar"]}'];
+        yield [null, '{"foo":"bar","bar":["bar","bar"]}'];
+        yield [['x-foo' => 'bar'], '{"foo":"bar","bar":["bar","bar"]}'];
+        yield [['content-type' => 'application/x-www-form-urlencoded'], 'foo=bar&bar%5B0%5D=bar&bar%5B1%5D=bar'];
     }
 
     public function testUnexpectedContentType(): void

@@ -116,7 +116,7 @@ class HeaderUtils
             if ($value === true) {
                 $parts[] = $name;
             } else {
-                $parts[] = $name . '=' . self::quote($value);
+                $parts[] = $name . '=' . self::quote((string) $value);
             }
         }
 
@@ -155,17 +155,23 @@ class HeaderUtils
      *
      * @return array<int, string|mixed>
      */
-    private static function groupParts(array $matches, string $separators): array
+    private static function groupParts(array $matches, string $separators, bool $first = true): array
     {
         $separator = $separators[0];
         $partSeparators = substr($separators, 1);
 
         $i = 0;
         $partMatches = [];
+        $previousMatchWasSeparator = false;
         foreach ($matches as $match) {
-            if (isset($match['separator']) && $match['separator'] === $separator) {
+            if (!$first && $previousMatchWasSeparator && isset($match['separator']) && $match['separator'] === $separator) {
+                $previousMatchWasSeparator = true;
+                $partMatches[$i][] = $match;
+            } elseif (isset($match['separator']) && $match['separator'] === $separator) {
+                $previousMatchWasSeparator = true;
                 ++$i;
             } else {
+                $previousMatchWasSeparator = false;
                 $partMatches[$i][] = $match;
             }
         }
@@ -173,11 +179,18 @@ class HeaderUtils
         $parts = [];
         if ($partSeparators) {
             foreach ($partMatches as $matches) {
-                $parts[] = self::groupParts($matches, $partSeparators);
+                $parts[] = self::groupParts($matches, $partSeparators, false);
             }
         } else {
             foreach ($partMatches as $matches) {
                 $parts[] = self::unquote($matches[0][0]);
+            }
+
+            if (!$first && 2 < \count($parts)) {
+                $parts = [
+                    $parts[0],
+                    implode($separator, \array_slice($parts, 1)),
+                ];
             }
         }
 

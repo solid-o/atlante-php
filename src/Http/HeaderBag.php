@@ -160,21 +160,20 @@ class HeaderBag implements IteratorAggregate, Countable
     public function set(string $key, $values, bool $replace = true): void
     {
         $key = strtr($key, self::UPPER, self::LOWER);
+        $replace = $replace === true || ! isset($this->headers[$key]);
 
         if (is_array($values)) {
             $values = array_values($values);
 
-            if ($replace === true || ! isset($this->headers[$key])) {
+            if ($replace) {
                 $this->headers[$key] = $values;
             } else {
-                $this->headers[$key] = array_merge($this->headers[$key], $values);
+                array_push($this->headers[$key], ...$values);
             }
+        } elseif ($replace) {
+            $this->headers[$key] = [$values];
         } else {
-            if ($replace === true || ! isset($this->headers[$key])) {
-                $this->headers[$key] = [$values];
-            } else {
-                $this->headers[$key][] = $values;
-            }
+            $this->headers[$key][] = $values;
         }
 
         if ($key !== 'cache-control') {
