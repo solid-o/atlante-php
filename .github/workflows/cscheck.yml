@@ -3,7 +3,6 @@ name: Check CS
 on:
     push:
     pull_request:
-        types: [opened]
 
 jobs:
     build:
@@ -29,4 +28,8 @@ jobs:
 
             -   name: Run diff-sniffer
                 if: ${{ github.base_ref != '' }}
-                run: composer cscheck -- --report=checkstyle | cs2pr
+                run: composer cscheck -- --report=checkstyle --report-file=cs.xml
+
+            -   name: Execute CS2PR
+                if: ${{ github.base_ref != '' }}
+                run: cat cs.xml | cs2pr
