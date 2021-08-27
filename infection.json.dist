@@ -4,6 +4,7 @@
             "src"
         ]
     },
+    "testFrameworkOptions": "--exclude-group=integration",
     "logs": {
         "text": "infection\/infection.log"
     },

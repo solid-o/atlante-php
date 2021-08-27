@@ -29,6 +29,7 @@
         "thecodingmachine/safe": "^1.1"
     },
     "require-dev": {
+        "guzzlehttp/guzzle": "^7.3",
         "jangregor/phpstan-prophecy": "^0.8.0",
         "laminas/laminas-diactoros": "^2.3",
         "nyholm/psr7": "^1",
@@ -44,6 +45,7 @@
         "solido/php-coding-standards": "dev-master",
         "symfony/cache": "^4.4 || ^5.1",
         "symfony/http-client": "^4.4 || ^5.1",
+        "symfony/process": "^4.4 || ^5.0",
         "symfony/string": "^5.1"
     },
     "autoload": {

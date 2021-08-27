@@ -28,7 +28,7 @@ jobs:
                   coverage: pcov
 
             - run: composer install
-            - run: vendor/bin/phpunit --coverage-clover phpunit/phpunit.coverage.xml --coverage-xml phpunit/coverage-xml --log-junit phpunit/junit.xml
+            - run: vendor/bin/phpunit --coverage-clover phpunit/phpunit.coverage.xml --coverage-xml phpunit/coverage-xml --log-junit phpunit/junit.xml --exclude-group integration
             - run: infection --threads=4 --logger-github --coverage=phpunit
 
             - name: Set repository name

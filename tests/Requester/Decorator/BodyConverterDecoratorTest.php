@@ -68,6 +68,14 @@ class BodyConverterDecoratorTest extends TestCase
             '["foo","bar"]',
         ];
 
+        yield [
+            // @phpcs:ignore Squiz.Arrays.ArrayDeclaration.ValueNoNewline
+            static function (): Generator {
+                yield 'foo' => 'bar';
+            },
+            '{"foo":"bar"}',
+        ];
+
         yield [null, null];
     }
 
