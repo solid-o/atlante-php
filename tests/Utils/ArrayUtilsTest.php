@@ -1,9 +1,11 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Solido\Atlante\Tests\Utils;
 
-use Solido\Atlante\Utils\ArrayUtils;
 use PHPUnit\Framework\TestCase;
+use Solido\Atlante\Utils\ArrayUtils;
 
 class ArrayUtilsTest extends TestCase
 {
@@ -22,6 +24,7 @@ class ArrayUtilsTest extends TestCase
             ['_id' => '12', 'great_key' => 'value_not_to_be_converted', 'another' => [['nested_one' => 1], ['nested_two' => 2]]],
         ];
     }
+
     /**
      * @dataProvider provideDataToSnakeCaseKeys
      */

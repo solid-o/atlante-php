@@ -8,13 +8,13 @@ use PHPUnit\Framework\TestCase;
 use Prophecy\Argument;
 use Prophecy\PhpUnit\ProphecyTrait;
 use Prophecy\Prophecy\ObjectProphecy;
-use Psr\Http\Message\RequestInterface;
 use Solido\Atlante\Http\HeaderBag;
 use Solido\Atlante\Requester\Response\Response as SolidoResponse;
 use Solido\Atlante\Requester\Response\ResponseFactoryInterface;
 use Solido\Atlante\Requester\SymfonyHttpClientRequester;
 use Symfony\Component\HttpClient\Response\MockResponse;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
+
 use function Safe\fopen;
 
 class SymfonyHttpClientRequesterTest extends TestCase

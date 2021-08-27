@@ -1,10 +1,16 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Solido\Atlante\Tests\Storage;
 
-use Solido\Atlante\Storage\AbstractStorage;
+use DateTime;
 use PHPUnit\Framework\TestCase;
+use Solido\Atlante\Storage\AbstractStorage;
 use Solido\Atlante\Storage\Item;
+use TypeError;
+
+use function serialize;
 
 class AbstractStorageTest extends TestCase
 {
@@ -36,7 +42,7 @@ class AbstractStorageTest extends TestCase
     {
         $item = $this->storage->getItem('bar');
         $item->set(42);
-        $item->expiresAt(new \DateTime('@0'));
+        $item->expiresAt(new DateTime('@0'));
 
         self::assertTrue($this->storage->save($item));
         self::assertFalse($this->storage->doSaveCalled);
@@ -55,7 +61,7 @@ class AbstractStorageTest extends TestCase
 
     public function testItemExpiresAfterShouldThrowOnInvalidArgument(): void
     {
-        $this->expectException(\TypeError::class);
+        $this->expectException(TypeError::class);
         $this->expectExceptionMessage('Expiration date must be an integer, a DateInterval or null, "array" given.');
 
         $item = $this->storage->getItem('bar');
@@ -76,6 +82,7 @@ class ConcreteStorage extends AbstractStorage
     public function deleteItem(string $key): bool
     {
         $this->doDeleteCalled = true;
+
         return true;
     }
 
@@ -91,13 +98,14 @@ class ConcreteStorage extends AbstractStorage
     protected function doSave(string $key, string $value, ?float $expiry): bool
     {
         $this->doSaveCalled = true;
+
         return true;
     }
 
     public function getDefaultLifetime(?Item $item = null): int
     {
         $getDefaultLifetime = (fn () => $this->getDefaultLifetime)->bindTo($this, AbstractStorage::class)();
-        $item = $item ?? (fn () => $this->createCacheItem)->bindTo($this, AbstractStorage::class)()('key', null, false);
+        $item ??= (fn () => $this->createCacheItem)->bindTo($this, AbstractStorage::class)()('key', null, false);
 
         return $getDefaultLifetime($item);
     }

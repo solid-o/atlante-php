@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Solido\Atlante\Tests\Requester;
 
+use InvalidArgumentException;
 use Nyholm\Psr7\Factory\Psr17Factory;
 use Nyholm\Psr7\Response;
 use PHPUnit\Framework\TestCase;
@@ -16,6 +17,7 @@ use Solido\Atlante\Http\HeaderBag;
 use Solido\Atlante\Requester\PsrClientRequester;
 use Solido\Atlante\Requester\Response\Response as SolidoResponse;
 use Solido\Atlante\Requester\Response\ResponseFactoryInterface;
+
 use function Safe\fopen;
 
 class PsrClientRequesterTest extends TestCase
@@ -108,7 +110,7 @@ class PsrClientRequesterTest extends TestCase
 
     public function testShouldThrowIfCallableBodyHasInvalidReturnType(): void
     {
-        $this->expectException(\InvalidArgumentException::class);
+        $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('Request body should be a string or a stream resource, "stdClass" passed');
 
         $this->requester->request('POST', '/', ['accept' => 'application/json'], static fn () => (object) []);
