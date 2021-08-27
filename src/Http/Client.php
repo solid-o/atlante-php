@@ -6,6 +6,7 @@ namespace Solido\Atlante\Http;
 
 use Closure;
 use ReflectionFunction;
+use ReflectionNamedType;
 use Solido\Atlante\Requester\Decorator\BodyConverterDecorator;
 use Solido\Atlante\Requester\Decorator\DecoratorInterface;
 use Solido\Atlante\Requester\Exception\AccessDeniedException;
@@ -96,7 +97,7 @@ class Client implements ClientInterface
 
         $headerBag = new HeaderBag($request->getHeaders());
         if (! $headerBag->has('Accept')) {
-            $headerBag->set('Accept', 'application/json', false);
+            $headerBag->set('Accept', 'application/json');
         }
 
         $response = $this->requester->request(
@@ -129,15 +130,12 @@ class Client implements ClientInterface
         };
 
         if (is_callable($body)) {
-            if (! $body instanceof Closure) {
-                $body = Closure::fromCallable($body);
-            }
-
+            $body = Closure::fromCallable($body);
             $refl = new ReflectionFunction($body);
             $returnType = $refl->getReturnType();
-            if ($returnType !== null && (string) $returnType === 'string') {
+            if ($returnType instanceof ReflectionNamedType && $returnType->getName() === 'string') {
                 // if Closure will return a string (accepted by Requesters) return Request untouched
-                return $request;
+                return new Request($request->getMethod(), $request->getUrl(), $request->getHeaders(), $body);
             }
 
             return $doNormalizeBody($request);
@@ -147,22 +145,24 @@ class Client implements ClientInterface
             return $doNormalizeBody($request);
         }
 
-        throw new TypeError(sprintf('Given request body has to be a string, a stream resource, a function that returns a string, a generator yielding strings or an iterable of strings, "%s" given', __METHOD__, get_debug_type($body)));
+        throw new TypeError(sprintf('Given request body has to be a string, a stream resource, a function that returns a string, a generator yielding strings or an iterable of strings, "%s" given', get_debug_type($body)));
     }
 
     protected static function filterResponse(ResponseInterface $response): void
     {
-        switch (true) {
-            case $response instanceof BadResponse:
-                throw new BadRequestException($response);
+        if ($response instanceof BadResponse) {
+            throw new BadRequestException($response);
+        }
 
-            case $response instanceof AccessDeniedResponse:
-                throw new AccessDeniedException($response);
+        if ($response instanceof AccessDeniedResponse) {
+            throw new AccessDeniedException($response);
+        }
 
-            case $response instanceof NotFoundResponse:
-                throw new NotFoundException($response);
+        if ($response instanceof NotFoundResponse) {
+            throw new NotFoundException($response);
+        }
 
-            case $response instanceof InvalidResponse:
+        if ($response instanceof InvalidResponse) {
                 throw new InvalidRequestException($response);
         }
     }

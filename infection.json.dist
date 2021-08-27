@@ -1,0 +1,39 @@
+{
+    "source": {
+        "directories": [
+            "src"
+        ]
+    },
+    "testFrameworkOptions": "--exclude-group=integration",
+    "logs": {
+        "text": "infection\/infection.log"
+    },
+    "mutators": {
+        "global-ignoreSourceCodeByRegex": [
+            "assert.*"
+        ],
+        "global-ignore": [
+            "Solido\\Common\\Urn\\Urn::parseUrn"
+        ],
+        "@default": true,
+        "DecrementInteger": {
+            "ignoreSourceCodeByRegex": [
+                ".*throw\\s+new\\s+.+Exception.*",
+                ".*json_decode.*"
+            ]
+        },
+        "IncrementInteger": {
+            "ignoreSourceCodeByRegex": [
+                ".*throw\\s+new\\s+.+Exception.*",
+                ".*json_decode.*"
+            ]
+        },
+        "TrueValue": {
+            "ignoreSourceCodeByRegex": [
+                ".*allowed_classes.*"
+            ]
+        }
+    },
+    "minMsi": 95,
+    "minCoveredMsi": 95
+}

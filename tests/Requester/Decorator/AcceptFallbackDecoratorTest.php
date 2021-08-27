@@ -29,12 +29,12 @@ class AcceptFallbackDecoratorTest extends TestCase
 
     public static function provideDecorationCases(): Generator
     {
-        yield [null, [],['accept' => ['application/json']]];
+        yield [null, [], ['accept' => ['application/json']]];
         yield [null, null, ['accept' => ['application/json']]];
-        yield [null, ['foo' => ['bar']],['accept' => ['application/json'],'foo' => ['bar']]];
-        yield [null, ['accept' => ['text/html']],['accept' => ['text/html']]];
+        yield [null, ['foo' => ['bar']], ['accept' => ['application/json'], 'foo' => ['bar']]];
+        yield [null, ['accept' => ['text/html']], ['accept' => ['text/html']]];
 
         yield ['application/xml', [], ['accept' => ['application/xml']]];
-        yield ['application/xml', ['accept' => ['text/html']],['accept' => ['text/html']]];
+        yield ['application/xml', ['accept' => ['text/html']], ['accept' => ['text/html']]];
     }
 }

@@ -1,0 +1,35 @@
+name: Integration tests
+on:
+    push:
+    pull_request:
+        types: [opened]
+
+jobs:
+    build:
+        runs-on: ubuntu-latest
+        strategy:
+            matrix:
+                sf_version:
+                    - '4.4'
+                    - '5.0'
+                    - '5.1'
+                    - '5.2'
+                    - '5.3'
+
+        name: Symfony ${{ matrix.sf_version }}
+        steps:
+            - uses: actions/checkout@v2
+              with:
+                fetch-depth: 0
+
+            - name: Setup PHP with pecl extension
+              uses: shivammathur/setup-php@v2
+              with:
+                  php-version: '8.0'
+                  tools: infection
+                  ini-values: zend.assertions=1,assert.exception=1,assert.active=1
+                  coverage: pcov
+
+            - run: composer require --no-update symfony/http-client ^${{ matrix.sf_version }}
+            - run: composer update
+            - run: vendor/bin/phpunit --group integration

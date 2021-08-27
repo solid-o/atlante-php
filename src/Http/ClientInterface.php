@@ -15,7 +15,6 @@ interface ClientInterface
      *
      * @param array|string|resource|Closure<string>|Traversable<string>|null $requestData
      * @param string[]|string[][]|null                                       $headers
-     *
      * @phpstan-param array|string|resource|Closure(): string|Traversable<string>|null $requestData
      */
     public function request(string $method, string $path, $requestData = null, ?array $headers = null): ResponseInterface;
@@ -39,7 +38,6 @@ interface ClientInterface
      *
      * @param array|string|resource|Closure<string>|Traversable<string>|null $requestData
      * @param string[]|string[][]|null                                       $headers
-     *
      * @phpstan-param array|string|resource|Closure(): string|Traversable<string>|null $requestData
      */
     public function post(string $path, $requestData = null, ?array $headers = null): ResponseInterface;
@@ -49,7 +47,6 @@ interface ClientInterface
      *
      * @param array|string|resource|Closure<string>|Traversable<string>|null $requestData
      * @param string[]|string[][]|null                                       $headers
-     *
      * @phpstan-param array|string|resource|Closure(): string|Traversable<string>|null $requestData
      */
     public function put(string $path, $requestData = null, ?array $headers = null): ResponseInterface;
@@ -59,7 +56,6 @@ interface ClientInterface
      *
      * @param array|string|resource|Closure<string>|Traversable<string>|null $requestData
      * @param string[]|string[][]|null                                       $headers
-     *
      * @phpstan-param array|string|resource|Closure(): string|Traversable<string>|null $requestData
      */
     public function patch(string $path, $requestData = null, ?array $headers = null): ResponseInterface;

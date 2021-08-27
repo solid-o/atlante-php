@@ -32,7 +32,6 @@ class ClientTokenAuthenticator implements DecoratorInterface
 
     /**
      * @param array<string, mixed> $options
-     *
      * @phpstan-param array{token_endpoint: string, client_id: string, client_secret?: string|null, client_token_key?: string, data_encoding: 'json'|'form'} $options
      */
     public function __construct(RequesterInterface $requester, StorageInterface $storage, array $options)
@@ -90,7 +89,6 @@ class ClientTokenAuthenticator implements DecoratorInterface
      * @param array<string, string> $options
      *
      * @return array<array<string, mixed>>
-     *
      * @phpstan-return array{array<string, string>, array<string, string|string[]>}
      */
     protected function buildTokenRequest(array $options): array

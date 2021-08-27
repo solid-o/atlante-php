@@ -90,9 +90,7 @@ class BodyConverterDecorator implements DecoratorInterface
                 return $generator->valid() ? $generator->current() : '';
             };
 
-            if (is_callable($body) || ! is_resource($body) || ! is_array(@stream_get_meta_data($body))) {
-                $body = $doHandle;
-            }
+            $body = $doHandle;
         }
 
         return new Request($request->getMethod(), $request->getUrl(), $headers->all(), $body);
@@ -123,10 +121,9 @@ class BodyConverterDecorator implements DecoratorInterface
 
     /**
      * @param array|string|resource|Closure|iterable<string>|null $body
+     * @phpstan-param array|string|resource|Closure(): string|iterable<string>|null $body
      *
      * @return array<mixed, mixed>|resource|string|Closure<string>|null
-     *
-     * @phpstan-param array|string|resource|Closure(): string|iterable<string>|null $body
      * @phpstan-return array<mixed, mixed>|resource|string|Closure(): string|null
      */
     private function prepare($body)

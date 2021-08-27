@@ -1,36 +1,35 @@
-name: Test
-on: [push]
+name: Tests
+on:
+    push:
+    pull_request:
+        types: [opened]
 
 jobs:
     build:
         runs-on: ubuntu-latest
         strategy:
             matrix:
-                php-version: ['7.4', '8.0']
-        name: Test on PHP ${{ matrix.php }}
+                php_version:
+                    - '7.4'
+                    - '8.0'
+
+        name: PHP ${{ matrix.php_version }}
         steps:
             - uses: actions/checkout@v2
+              with:
+                fetch-depth: 0
 
-            - name: Install PHP
+            - name: Setup PHP with pecl extension
               uses: shivammathur/setup-php@v2
               with:
-                  php-version: ${{ matrix.php-version }}
-                  extensions: pdo
+                  php-version: ${{ matrix.php_version }}
+                  tools: infection
+                  ini-values: zend.assertions=1,assert.exception=1,assert.active=1
                   coverage: pcov
-                  ini-values: zend.assertions=1
 
-            - name: Cache dependencies installed with composer
-              uses: actions/cache@v2
-              with:
-                  path: "~/.composer/cache"
-                  key: php-${{ matrix.php-version }}-composer-locked-${{ hashFiles('composer.lock') }}
-                  restore-keys: php-${{ matrix.php-version }}-composer-locked-
-
-            - name: Install dependencies with composer
-              run: composer update --no-interaction --no-progress --no-suggest
-
-            - name: Run PHPUnit
-              run: vendor/bin/phpunit --coverage-clover phpunit/phpunit.coverage.xml --log-junit phpunit/junit.xml
+            - run: composer install
+            - run: vendor/bin/phpunit --coverage-clover phpunit/phpunit.coverage.xml --coverage-xml phpunit/coverage-xml --log-junit phpunit/junit.xml --exclude-group integration
+            - run: infection --threads=4 --logger-github --coverage=phpunit
 
             - name: Set repository name
               id: repository-name
@@ -56,4 +55,3 @@ jobs:
                       -Dsonar.tests=tests
                       -Dsonar.php.coverage.reportPaths=phpunit/phpunit.coverage.xml
                       -Dsonar.php.tests.reportPath=phpunit/junit.xml
-

@@ -9,6 +9,7 @@ use InvalidArgumentException;
 use PHPUnit\Framework\TestCase;
 use Solido\Atlante\Requester\Response\BadResponsePropertyTree;
 use Throwable;
+
 use function PHPUnit\Framework\assertCount;
 
 class BadResponsePropertyTreeTest extends TestCase
@@ -98,12 +99,11 @@ class BadResponsePropertyTreeTest extends TestCase
 
     /**
      * @param object|array<string,mixed>|string $content
-     * @param string $exceptionClass
-     *
      * @phpstan-param class-string<Throwable> $exceptionClass
+     *
      * @dataProvider provideBadCases
      */
-    public function testBadCases($content, $exceptionClass, ?string $message = null): void
+    public function testBadCases($content, string $exceptionClass, ?string $message = null): void
     {
         $this->expectException($exceptionClass);
         if ($message !== null) {

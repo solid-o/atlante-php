@@ -20,7 +20,7 @@ class AcceptFallbackDecorator implements DecoratorInterface
     {
         $headers = new HeaderBag($request->getHeaders());
         if (! $headers->has('accept')) {
-            $headers->set('accept', $this->accept, true);
+            $headers->set('accept', $this->accept);
         }
 
         return new Request($request->getMethod(), $request->getUrl(), $headers->all(), $request->getBody());

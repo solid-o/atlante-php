@@ -15,7 +15,7 @@ use Safe\Exceptions\DatetimeException;
 use function array_key_exists;
 use function array_keys;
 use function array_map;
-use function array_merge;
+use function array_push;
 use function array_values;
 use function assert;
 use function count;
@@ -160,21 +160,20 @@ class HeaderBag implements IteratorAggregate, Countable
     public function set(string $key, $values, bool $replace = true): void
     {
         $key = strtr($key, self::UPPER, self::LOWER);
+        $replace = $replace === true || ! isset($this->headers[$key]);
 
         if (is_array($values)) {
             $values = array_values($values);
 
-            if ($replace === true || ! isset($this->headers[$key])) {
+            if ($replace) {
                 $this->headers[$key] = $values;
             } else {
-                $this->headers[$key] = array_merge($this->headers[$key], $values);
+                array_push($this->headers[$key], ...$values);
             }
+        } elseif ($replace) {
+            $this->headers[$key] = [$values];
         } else {
-            if ($replace === true || ! isset($this->headers[$key])) {
-                $this->headers[$key] = [$values];
-            } else {
-                $this->headers[$key][] = $values;
-            }
+            $this->headers[$key][] = $values;
         }
 
         if ($key !== 'cache-control') {
@@ -303,7 +302,7 @@ class HeaderBag implements IteratorAggregate, Countable
         return count($this->headers);
     }
 
-    protected function getCacheControlHeader(): string
+    private function getCacheControlHeader(): string
     {
         ksort($this->cacheControl);
 
@@ -315,7 +314,7 @@ class HeaderBag implements IteratorAggregate, Countable
      *
      * @return array<string, mixed> An array representing the attribute values
      */
-    protected function parseCacheControl(string $header): array
+    private function parseCacheControl(string $header): array
     {
         $parts = HeaderUtils::split($header, ',=');
 
