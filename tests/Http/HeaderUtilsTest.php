@@ -21,6 +21,7 @@ class HeaderUtilsTest extends TestCase
     {
         return [
             [['foo=123', 'bar'], 'foo=123,bar', ','],
+            [['foo=123', 'bar'], 'foo=123/bar', '/'],
             [['foo=123', 'bar'], 'foo=123, bar', ','],
             [[['foo=123', 'bar']], 'foo=123; bar', ',;'],
             [[['foo=123'], ['bar']], 'foo=123, bar', ',;'],
@@ -28,10 +29,12 @@ class HeaderUtilsTest extends TestCase
             [['foo', '123, bar'], ' foo = 123, bar ', '='],
             [[['foo', '123'], ['bar']], 'foo=123, bar', ',='],
             [[[['foo', '123']], [['bar'], ['foo', '456']]], 'foo=123, bar; foo=456', ',;='],
+            [[[['foo', '123']], [['bar'], [';'], ['foo', '==456']], [['baz', 'bar']], [['foobar', '789']]], 'foo=123, bar;;foo==456, baz=bar, foobar=789', ',;='],
             [[[['foo', 'a,b;c=d']]], 'foo="a,b;c=d"', ',;='],
 
             [['foo', 'bar'], 'foo,,,, bar', ','],
             [['foo', 'bar'], ',foo, bar,', ','],
+            [['foo', 'bar'], ',,,foo, bar,', ','],
             [['foo', 'bar'], ' , foo, bar, ', ','],
             [['foo bar'], 'foo "bar"', ','],
             [['foo bar'], '"foo" bar', ','],
@@ -72,6 +75,7 @@ class HeaderUtilsTest extends TestCase
     public function testQuote(): void
     {
         self::assertSame('foo', HeaderUtils::quote('foo'));
+        self::assertSame('FOO', HeaderUtils::quote('FOO'));
         self::assertSame('az09!#$%&\'*.^_`|~-', HeaderUtils::quote('az09!#$%&\'*.^_`|~-'));
         self::assertSame('"foo bar"', HeaderUtils::quote('foo bar'));
         self::assertSame('"foo [bar]"', HeaderUtils::quote('foo [bar]'));

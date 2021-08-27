@@ -14,9 +14,9 @@ abstract class AbstractException extends RuntimeException
 {
     protected ResponseInterface $response;
 
-    public function __construct(ResponseInterface $response, ?string $message = null, ?Throwable $previous = null, int $code = 0)
+    public function __construct(ResponseInterface $response, ?string $message = null, ?Throwable $previous = null)
     {
-        parent::__construct($message ?? sprintf('Unsuccessful response received. Status code = %u.', $response->getStatusCode()), $code, $previous);
+        parent::__construct($message ?? sprintf('Unsuccessful response received. Status code = %u.', $response->getStatusCode()), 0, $previous);
         $this->response = $response;
     }
 

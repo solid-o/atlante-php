@@ -4,13 +4,16 @@ declare(strict_types=1);
 
 namespace Solido\Atlante\Tests\Http;
 
+use ArrayObject;
+use Closure;
+use PHPUnit\Framework\TestCase;
 use Prophecy\Argument;
 use Prophecy\PhpUnit\ProphecyTrait;
 use Prophecy\Prophecy\ObjectProphecy;
 use Solido\Atlante\Http\Client;
-use PHPUnit\Framework\TestCase;
 use Solido\Atlante\Http\HeaderBag;
 use Solido\Atlante\Requester\Decorator\DecoratorInterface;
+use Solido\Atlante\Requester\Exception\AbstractException;
 use Solido\Atlante\Requester\Exception\AccessDeniedException;
 use Solido\Atlante\Requester\Exception\BadRequestException;
 use Solido\Atlante\Requester\Exception\InvalidRequestException;
@@ -24,6 +27,9 @@ use Solido\Atlante\Requester\Response\InvalidResponse;
 use Solido\Atlante\Requester\Response\NotFoundResponse;
 use Solido\Atlante\Requester\Response\Response;
 use TypeError;
+
+use function assert;
+use function fopen;
 
 class ClientTest extends TestCase
 {
@@ -136,9 +142,9 @@ class ClientTest extends TestCase
             return true;
         }))
             ->shouldBeCalled()
-            ->will(function ($args) {
-                /** @var Request $request */
+            ->will(function ($args) { // phpcs:ignore
                 $request = $args[0];
+                assert($request instanceof Request);
                 $headers = $request->getHeaders();
                 $headers['x-test'] = ['great work!'];
 
@@ -152,9 +158,9 @@ class ClientTest extends TestCase
             return true;
         }))
             ->shouldBeCalled()
-            ->will(function ($args) {
-                /** @var Request $request */
+            ->will(function ($args) { // phpcs:ignore
                 $request = $args[0];
+                assert($request instanceof Request);
 
                 return new Request('PUT', 'https://example.com/second/', $request->getHeaders(), 'decorated-body');
             });
@@ -180,15 +186,25 @@ class ClientTest extends TestCase
             ->shouldBeCalled()
             ->willReturn($response);
 
-        $this->client->get('/', []);
+        try {
+            $this->client->get('/', []);
+        } catch (AbstractException $e) {
+            self::assertSame($response, $e->getResponse());
+
+            throw $e;
+        }
     }
 
     public function provideInvalidResponses(): iterable
     {
-        yield [BadRequestException::class, new BadResponse(new HeaderBag(), (object) [
-            'errors' => [],
-            'name' => '',
-        ])];
+        yield [
+            BadRequestException::class,
+            new BadResponse(new HeaderBag(), (object) [
+                'errors' => [],
+                'name' => '',
+            ]),
+        ];
+
         yield [AccessDeniedException::class, new AccessDeniedResponse(new HeaderBag(), '{}')];
         yield [NotFoundException::class, new NotFoundResponse(new HeaderBag(), '{}')];
         yield [InvalidRequestException::class, new InvalidResponse(500, new HeaderBag(), '{}')];
@@ -211,9 +227,10 @@ class ClientTest extends TestCase
     {
         $this->requester->request('POST', '/', [
             'content-type' => ['application/json'],
-            'accept' => ['application/json']
-        ], Argument::that(static function (\Closure $closure): bool {
+            'accept' => ['application/json'],
+        ], Argument::that(static function (Closure $closure): bool {
             self::assertEquals('{"test":"great"}', $closure());
+
             return true;
         }))
             ->shouldBeCalled()
@@ -225,16 +242,18 @@ class ClientTest extends TestCase
     public function provideIterableBody(): iterable
     {
         yield [['test' => 'great']];
-        yield [new \ArrayObject(['test' => 'great'])];
-        yield [(static function () {
-            yield 'test' => 'great';
-        })()];
+        yield [new ArrayObject(['test' => 'great'])];
+        yield [
+            (static function () {
+                yield 'test' => 'great';
+            })(),
+        ];
     }
 
     public function testShouldThrowTryingToNormalizeAnObject(): void
     {
         $this->expectException(TypeError::class);
-        $this->expectExceptionMessage('Given request body has to be a string, a stream resource, a function that returns a string, a generator yielding strings or an iterable of strings, "'.__CLASS__.'" given');
+        $this->expectExceptionMessage('Given request body has to be a string, a stream resource, a function that returns a string, a generator yielding strings or an iterable of strings, "' . self::class . '" given');
         $this->client->post('/', $this, []);
     }
 
@@ -242,9 +261,10 @@ class ClientTest extends TestCase
     {
         $this->requester->request('POST', '/', [
             'content-type' => ['application/json'],
-            'accept' => ['application/json']
-        ], Argument::that(static function (\Closure $closure): bool {
+            'accept' => ['application/json'],
+        ], Argument::that(static function (Closure $closure): bool {
             self::assertEquals('{"test":"great"}', $closure());
+
             return true;
         }))
             ->shouldBeCalled()
@@ -258,9 +278,10 @@ class ClientTest extends TestCase
     public function testShouldNormalizeCallablesReturningString(): void
     {
         $this->requester->request('POST', '/', [
-            'accept' => ['application/json']
-        ], Argument::that(static function (\Closure $closure): bool {
+            'accept' => ['application/json'],
+        ], Argument::that(static function (Closure $closure): bool {
             self::assertEquals('{"test":"great"}', $closure());
+
             return true;
         }))
             ->shouldBeCalled()
@@ -275,9 +296,10 @@ class ClientTest extends TestCase
     {
         $this->requester->request('POST', '/', [
             'content-type' => ['application/json'],
-            'accept' => ['application/json']
-        ], Argument::that(static function (\Closure $closure): bool {
+            'accept' => ['application/json'],
+        ], Argument::that(static function (Closure $closure): bool {
             self::assertEquals('{"test":"great"}', $closure());
+
             return true;
         }))
             ->shouldBeCalled()
@@ -291,9 +313,10 @@ class ClientTest extends TestCase
     public function testShouldNormalizeCallableNotClosures(): void
     {
         $this->requester->request('POST', '/', [
-            'accept' => ['application/json']
-        ], Argument::that(static function (\Closure $closure): bool {
+            'accept' => ['application/json'],
+        ], Argument::that(static function (Closure $closure): bool {
             self::assertEquals('{"test":"great"}', $closure());
+
             return true;
         }))
             ->shouldBeCalled()

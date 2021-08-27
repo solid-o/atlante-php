@@ -6,12 +6,12 @@ namespace Solido\Atlante\Requester\Decorator;
 
 use Solido\Atlante\Requester\Request;
 
+use function assert;
 use function http_build_query;
 use function parse_str;
 use function Safe\array_replace_recursive;
 use function Safe\parse_url;
 use function Safe\substr;
-use function strpos;
 use function strrpos;
 use function strtr;
 
@@ -36,8 +36,20 @@ class UrlDecorator implements DecoratorInterface
 
         $url = strtr('schema://auth@host:port/path?query#fragment', [
             'schema://' => ($scheme = $parsedBase['scheme'] ?? null) !== null ? $scheme . '://' : '',
-            'auth@' => ($user = $parsedBase['user'] ?? null) !== null && ($pass = $parsedBase['pass'] ?? null) !== null ?
-                ($user . ':' . $pass . '@') : '',
+            'auth@' => (static function () use ($parsedBase): string {
+                $user = $parsedBase['user'] ?? null;
+                if ($user === null) {
+                    return '';
+                }
+
+                $auth = $user;
+                $pass = $parsedBase['pass'] ?? null;
+                if ($pass !== null) {
+                    $auth .= ':' . $pass;
+                }
+
+                return $auth . '@';
+            })(),
             'host' => $parsedBase['host'] ?? '',
             ':port' => $parsedBase['port'] ?? null ? ':' . $parsedBase['port'] : '',
             '/path?query#fragment' => (static function () use ($parsedUrl, $parsedBase): string {
@@ -60,7 +72,8 @@ class UrlDecorator implements DecoratorInterface
 
                     if ($basePath !== null) {
                         $pos = strrpos($basePath, '/');
-                        $path = ($pos !== false ? substr($basePath, 0, $pos) : '') . '/' . $urlPath;
+                        assert($pos !== false);
+                        $path = substr($basePath, 0, $pos) . '/' . $urlPath;
                     }
 
                     $query = $urlQuery ?? '';
@@ -78,8 +91,9 @@ class UrlDecorator implements DecoratorInterface
                     }
                 }
 
-                return (strpos($path, '/') === 0 ? '' : '/') . $path .
-                    ($query !== '' ? '?' : '') . $query .
+                assert($path[0] === '/');
+
+                return $path . ($query !== '' ? '?' : '') . $query .
                     ($fragment !== '' ? '#' : '') . $fragment;
             })(),
         ]);

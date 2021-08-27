@@ -19,7 +19,7 @@ class VersionSetterDecorator implements DecoratorInterface
     public function decorate(Request $request): Request
     {
         $headers = new HeaderBag($request->getHeaders());
-        $headers->set('version', $this->version, true);
+        $headers->set('version', $this->version);
 
         return new Request($request->getMethod(), $request->getUrl(), $headers->all(), $request->getBody());
     }

@@ -6,14 +6,18 @@ namespace Solido\Atlante\Tests\Requester\Decorator;
 
 use Closure;
 use Generator;
+use InvalidArgumentException;
 use PHPUnit\Framework\TestCase;
 use RuntimeException;
 use Solido\Atlante\Requester\Decorator\BodyConverterDecorator;
 use Solido\Atlante\Requester\Request;
 use UnexpectedValueException;
+
+use function curl_init;
 use function is_callable;
 use function json_encode;
 use function Safe\fopen;
+
 use const JSON_THROW_ON_ERROR;
 
 class BodyConverterDecoratorTest extends TestCase
@@ -29,8 +33,8 @@ class BodyConverterDecoratorTest extends TestCase
     /**
      * @param array|string|resource|Closure|iterable<string>|null $given
      * @param string|resource|null $expected
-     *
      * @phpstan-param array|string|resource|Closure(): string|iterable<string>|null $given
+     *
      * @dataProvider provideDecorateCases
      */
     public function testDecorateBody($given, $expected): void
@@ -67,13 +71,35 @@ class BodyConverterDecoratorTest extends TestCase
         yield [null, null];
     }
 
+    public function testShouldReadStreamChunked(): void
+    {
+        $decorator = new BodyConverterDecorator();
+        $decorated = $decorator->decorate(new Request('GET', '/example.com', null, fopen('data://text/plain,foobar', 'rb')));
+
+        $body = $decorated->getBody();
+        self::assertEquals('foo', $body(3));
+        self::assertEquals('bar', $body(3));
+        self::assertEquals('', $body(3));
+    }
+
+    public function testShouldReadStringChunked(): void
+    {
+        $decorator = new BodyConverterDecorator();
+        $decorated = $decorator->decorate(new Request('GET', '/example.com', null, static fn () => 'foobar'));
+
+        $body = $decorated->getBody();
+        self::assertEquals('foo', $body(3));
+        self::assertEquals('bar', $body(3));
+        self::assertEquals('', $body(3));
+    }
+
     /**
      * @doesNotPerformAssertions
      */
     public function testDeferredCallable(): void
     {
         $decorator = new BodyConverterDecorator();
-        $decorator->decorate(new Request('GET', '/example.com', null, static function () {
+        $decorator->decorate(new Request('GET', '/example.com', null, static function (): void {
             throw new RuntimeException('This exception should not be triggered');
         }));
     }
@@ -113,6 +139,18 @@ class BodyConverterDecoratorTest extends TestCase
             return;
         }
 
-        $body = $body();
+        $body();
+    }
+
+    public function testDecorateBodyWithNonStreamResource(): void
+    {
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage('Argument #0 passed to Solido\Atlante\Requester\Decorator\BodyConverterDecorator::prepare has to be null, string, stream resource, iterable or callable');
+
+        $decorator = new BodyConverterDecorator();
+        $decorated = $decorator->decorate(new Request('GET', '/example.com', null, curl_init('https://localhost')));
+
+        $body = $decorated->getBody();
+        $body();
     }
 }

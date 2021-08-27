@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace Solido\Atlante\Storage;
 
 use Closure;
+use DateInterval;
+use InvalidArgumentException;
 use Safe\DateTime;
 
 use function Safe\sprintf;
@@ -19,6 +21,10 @@ abstract class AbstractStorage implements StorageInterface
 
     public function __construct(int $defaultLifetime = 0)
     {
+        if ($defaultLifetime < 0) {
+            throw new InvalidArgumentException('Storage default lifetime should be equal or greater than 0');
+        }
+
         $this->createCacheItem = Closure::bind(
             static function ($key, $value, $isHit) use ($defaultLifetime) {
                 $item = new Item();
@@ -78,7 +84,7 @@ abstract class AbstractStorage implements StorageInterface
         $key = $item->getKey();
         $expiry = ($this->getExpiration)($item);
 
-        if ($expiry && DateTime::createFromFormat('U.u', sprintf('%.3f', $expiry)) < new DateTime()) {
+        if ($expiry !== null && DateTime::createFromFormat('U.u', sprintf('%.3f', $expiry)) < new DateTime()) {
             $this->deleteItem($key);
 
             return true;
@@ -89,7 +95,9 @@ abstract class AbstractStorage implements StorageInterface
 
         $defaultLifetime = ($this->getDefaultLifetime)($item);
         if ($expiry === null && 0 < $defaultLifetime) {
-            $expiry = (float) DateTime::createFromFormat('U', '0')->add($defaultLifetime)->format('U.u');
+            $expiry = (float) (new DateTime())
+                ->add(new DateInterval('PT' . $defaultLifetime . 'S'))
+                ->format('U.u');
         }
 
         return $this->doSave($key, $value, $expiry);

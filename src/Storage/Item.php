@@ -9,6 +9,7 @@ use DateTimeInterface;
 use InvalidArgumentException;
 use Safe\DateTime;
 
+use TypeError;
 use function get_debug_type;
 use function is_int;
 use function microtime;
@@ -57,10 +58,8 @@ class Item implements ItemInterface
     {
         if ($expiration === null) {
             $this->expiry = $this->defaultLifetime > 0 ? microtime(true) + $this->defaultLifetime : null;
-        } elseif ($expiration instanceof DateTimeInterface) {
-            $this->expiry = (float) $expiration->format('U.u');
         } else {
-            throw new InvalidArgumentException(sprintf('Expiration date must implement DateTimeInterface or be null, "%s" given.', get_debug_type($expiration)));
+            $this->expiry = (float) $expiration->format('U.u');
         }
 
         return $this;
@@ -78,7 +77,7 @@ class Item implements ItemInterface
         } elseif (is_int($time)) {
             $this->expiry = $time + microtime(true);
         } else {
-            throw new InvalidArgumentException(sprintf('Expiration date must be an integer, a DateInterval or null, "%s" given.', get_debug_type($time)));
+            throw new TypeError(sprintf('Expiration date must be an integer, a DateInterval or null, "%s" given.', get_debug_type($time)));
         }
 
         return $this;

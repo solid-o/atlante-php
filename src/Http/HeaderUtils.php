@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace Solido\Atlante\Http;
 
 use function addcslashes;
+use function array_slice;
+use function count;
 use function implode;
 use function preg_quote;
 use function Safe\preg_match;
@@ -12,7 +14,6 @@ use function Safe\preg_match_all;
 use function Safe\preg_replace;
 use function Safe\substr;
 use function strtolower;
-use function trim;
 
 use const PREG_SET_ORDER;
 
@@ -61,7 +62,7 @@ class HeaderUtils
                 \s*
                 (?<separator>[' . $quotedSeparators . '])
                 \s*
-            /x', trim($header), $matches, PREG_SET_ORDER);
+            /x', $header, $matches, PREG_SET_ORDER);
 
         return self::groupParts($matches, $separators);
     }
@@ -164,10 +165,12 @@ class HeaderUtils
         $partMatches = [];
         $previousMatchWasSeparator = false;
         foreach ($matches as $match) {
-            if (!$first && $previousMatchWasSeparator && isset($match['separator']) && $match['separator'] === $separator) {
-                $previousMatchWasSeparator = true;
-                $partMatches[$i][] = $match;
-            } elseif (isset($match['separator']) && $match['separator'] === $separator) {
+            $currentIsSeparator = isset($match['separator']) && $match['separator'] === $separator;
+            if ($currentIsSeparator) {
+                if (! $first && $previousMatchWasSeparator) {
+                    $partMatches[$i][] = $match;
+                }
+
                 $previousMatchWasSeparator = true;
                 ++$i;
             } else {
@@ -186,10 +189,10 @@ class HeaderUtils
                 $parts[] = self::unquote($matches[0][0]);
             }
 
-            if (!$first && 2 < \count($parts)) {
+            if (! $first && 2 < count($parts)) {
                 $parts = [
                     $parts[0],
-                    implode($separator, \array_slice($parts, 1)),
+                    implode($separator, array_slice($parts, 1)),
                 ];
             }
         }

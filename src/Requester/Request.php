@@ -11,12 +11,12 @@ use Traversable;
 
 use function method_exists;
 use function Safe\sprintf;
-use function ucfirst;
 
 /**
  * @property-read array|string|resource|Traversable|Closure $body
  * @property-read string                                    $url
  * @property-read string                                    $method
+ * @property-read string[]|string[][]                       $headers
  */
 class Request
 {
@@ -33,7 +33,6 @@ class Request
     /**
      * @param array|string|resource|Closure<string>|iterable<string>|null $body
      * @param string[]|string[][]|null                                       $headers
-     *
      * @phpstan-param array|string|resource|Closure(): string|iterable<string>|null $body
      */
     public function __construct(string $method, string $url, ?array $headers = null, $body = null)
@@ -46,7 +45,6 @@ class Request
 
     /**
      * @return array|string|resource|Closure<string>|iterable<string>|null
-     *
      * @phpstan-return array|string|resource|Closure(): string|iterable<string>|null
      */
     public function getBody()
@@ -77,7 +75,7 @@ class Request
      */
     public function __get(string $name)
     {
-        $method = sprintf('get%s', ucfirst($name));
+        $method = sprintf('get%s', $name);
         if (method_exists($this, $method)) {
             return $this->$method();
         }

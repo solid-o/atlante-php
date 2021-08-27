@@ -6,6 +6,7 @@ namespace Solido\Atlante\Http;
 
 use Closure;
 use ReflectionFunction;
+use ReflectionNamedType;
 use Solido\Atlante\Requester\Decorator\BodyConverterDecorator;
 use Solido\Atlante\Requester\Decorator\DecoratorInterface;
 use Solido\Atlante\Requester\Exception\AccessDeniedException;
@@ -132,7 +133,7 @@ class Client implements ClientInterface
             $body = Closure::fromCallable($body);
             $refl = new ReflectionFunction($body);
             $returnType = $refl->getReturnType();
-            if ($returnType !== null && (string) $returnType === 'string') {
+            if ($returnType instanceof ReflectionNamedType && $returnType->getName() === 'string') {
                 // if Closure will return a string (accepted by Requesters) return Request untouched
                 return new Request($request->getMethod(), $request->getUrl(), $request->getHeaders(), $body);
             }
@@ -149,17 +150,19 @@ class Client implements ClientInterface
 
     protected static function filterResponse(ResponseInterface $response): void
     {
-        switch (true) {
-            case $response instanceof BadResponse:
-                throw new BadRequestException($response);
+        if ($response instanceof BadResponse) {
+            throw new BadRequestException($response);
+        }
 
-            case $response instanceof AccessDeniedResponse:
-                throw new AccessDeniedException($response);
+        if ($response instanceof AccessDeniedResponse) {
+            throw new AccessDeniedException($response);
+        }
 
-            case $response instanceof NotFoundResponse:
-                throw new NotFoundException($response);
+        if ($response instanceof NotFoundResponse) {
+            throw new NotFoundException($response);
+        }
 
-            case $response instanceof InvalidResponse:
+        if ($response instanceof InvalidResponse) {
                 throw new InvalidRequestException($response);
         }
     }

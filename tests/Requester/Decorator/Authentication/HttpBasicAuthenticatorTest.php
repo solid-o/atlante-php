@@ -9,6 +9,7 @@ use PHPUnit\Framework\TestCase;
 use Solido\Atlante\Http\HeaderBag;
 use Solido\Atlante\Requester\Decorator\Authentication\HttpBasicAuthenticator;
 use Solido\Atlante\Requester\Request;
+
 use function is_array;
 use function reset;
 

@@ -26,6 +26,11 @@
                 ".*throw\\s+new\\s+.+Exception.*",
                 ".*json_decode.*"
             ]
+        },
+        "TrueValue": {
+            "ignoreSourceCodeByRegex": [
+                ".*allowed_classes.*"
+            ]
         }
     },
     "minMsi": 95,

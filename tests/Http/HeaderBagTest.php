@@ -4,8 +4,12 @@ declare(strict_types=1);
 
 namespace Solido\Atlante\Tests\Http;
 
-use Solido\Atlante\Http\HeaderBag;
+use DateTime;
 use PHPUnit\Framework\TestCase;
+use RuntimeException;
+use Solido\Atlante\Http\HeaderBag;
+
+use function count;
 
 class HeaderBagTest extends TestCase
 {
@@ -44,7 +48,7 @@ class HeaderBagTest extends TestCase
     {
         $bag = new HeaderBag(['foo' => 'Tue, 4 Sep 2012 20:00:00 +0200']);
         $headerDate = $bag->getDate('foo');
-        self::assertInstanceOf(\DateTime::class, $headerDate);
+        self::assertInstanceOf(DateTime::class, $headerDate);
     }
 
     public function testGetDateNull(): void
@@ -56,7 +60,7 @@ class HeaderBagTest extends TestCase
 
     public function testGetDateException(): void
     {
-        $this->expectException(\RuntimeException::class);
+        $this->expectException(RuntimeException::class);
         $bag = new HeaderBag(['foo' => 'Tue']);
         $bag->getDate('foo');
     }
@@ -67,6 +71,16 @@ class HeaderBagTest extends TestCase
         $bag->addCacheControlDirective('public', '#a');
         self::assertTrue($bag->hasCacheControlDirective('public'));
         self::assertEquals('#a', $bag->getCacheControlDirective('public'));
+        self::assertEquals('public=#a', $bag->get('Cache-Control'));
+    }
+
+    public function testRemoveCacheControlHeader(): void
+    {
+        $bag = new HeaderBag();
+        $bag->set('Cache-Control', 'public=#a');
+        $bag->removeCacheControlDirective('public');
+        self::assertFalse($bag->hasCacheControlDirective('public'));
+        self::assertEquals('', $bag->get('Cache-Control'));
     }
 
     public function testAll(): void
@@ -113,6 +127,22 @@ class HeaderBagTest extends TestCase
         $bag->add(['foo' => 'baz', 'fizz' => 'bar']);
 
         self::assertEquals(['foo' => ['baz'], 'fuzz' => ['bizz'], 'fizz' => ['bar']], $bag->all());
+    }
+
+    public function testRemove(): void
+    {
+        $bag = new HeaderBag(['foo' => 'bar', 'fuzz' => 'bizz', 'cache-control' => 'public=#a']);
+        $bag->remove('fuzz');
+        self::assertEquals(['foo' => ['bar'], 'cache-control' => ['public=#a']], $bag->all());
+        self::assertNotEmpty($bag->getCacheControlDirective('public'));
+    }
+
+    public function testRemoveCacheControl(): void
+    {
+        $bag = new HeaderBag(['foo' => 'bar', 'cache-control' => 'public=#a']);
+        $bag->remove('cache-control');
+        self::assertEquals(['foo' => ['bar']], $bag->all());
+        self::assertEmpty($bag->getCacheControlDirective('public'));
     }
 
     public function testSet(): void
@@ -226,7 +256,7 @@ class HeaderBagTest extends TestCase
             self::assertEquals([$headers[$key]], $val);
         }
 
-        self::assertEquals(\count($headers), $i);
+        self::assertEquals(count($headers), $i);
     }
 
     public function testCount(): void
@@ -234,6 +264,6 @@ class HeaderBagTest extends TestCase
         $headers = ['foo' => 'bar', 'HELLO' => 'WORLD'];
         $headerBag = new HeaderBag($headers);
 
-        self::assertCount(\count($headers), $headerBag);
+        self::assertCount(count($headers), $headerBag);
     }
 }

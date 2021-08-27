@@ -15,7 +15,7 @@ use Safe\Exceptions\DatetimeException;
 use function array_key_exists;
 use function array_keys;
 use function array_map;
-use function array_merge;
+use function array_push;
 use function array_values;
 use function assert;
 use function count;
@@ -302,7 +302,7 @@ class HeaderBag implements IteratorAggregate, Countable
         return count($this->headers);
     }
 
-    protected function getCacheControlHeader(): string
+    private function getCacheControlHeader(): string
     {
         ksort($this->cacheControl);
 
@@ -314,7 +314,7 @@ class HeaderBag implements IteratorAggregate, Countable
      *
      * @return array<string, mixed> An array representing the attribute values
      */
-    protected function parseCacheControl(string $header): array
+    private function parseCacheControl(string $header): array
     {
         $parts = HeaderUtils::split($header, ',=');
 
