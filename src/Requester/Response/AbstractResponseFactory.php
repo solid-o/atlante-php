@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Solido\Atlante\Requester\Response;
 
+use InvalidArgumentException;
 use JsonException;
 use Solido\Atlante\Http\HeaderBag;
 
@@ -29,7 +30,13 @@ abstract class AbstractResponseFactory implements ResponseFactoryInterface
 
             switch ($statusCode) {
                 case 400:
-                    return new BadResponse($headers, $data);
+                    try {
+                        return new BadResponse($headers, $data);
+                    } catch (InvalidArgumentException $e) {
+                        // @ignoreException
+                    }
+
+                    break;
 
                 case 403:
                     return new AccessDeniedResponse($headers, $data);

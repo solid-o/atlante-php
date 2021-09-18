@@ -14,6 +14,7 @@ use Solido\Atlante\Requester\Response\BadResponse;
 use Solido\Atlante\Requester\Response\BadResponsePropertyTree;
 use Solido\Atlante\Requester\Response\InvalidResponse;
 use Solido\Atlante\Requester\Response\NotFoundResponse;
+use Solido\Atlante\Requester\Response\Parser\BadResponse\KcsSerializerPropertyTreeParser;
 use Solido\Atlante\Requester\Response\Response;
 use Solido\Atlante\Requester\Response\ResponseFactory;
 use Solido\Atlante\Requester\Response\ResponseFactoryInterface;
@@ -85,11 +86,7 @@ class ResponseFactoryTest extends TestCase
                 $factory,
                 BadResponse::class,
                 $statusCode,
-                BadResponsePropertyTree::parse([
-                    'name' => 'foo',
-                    'errors' => ['Required.'],
-                    'children' => [],
-                ]),
+                new BadResponsePropertyTree('foo', ['Required.'], []),
                 ['content-type' => ['application/json']],
             ];
 

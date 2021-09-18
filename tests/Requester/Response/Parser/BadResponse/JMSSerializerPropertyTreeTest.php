@@ -2,17 +2,19 @@
 
 declare(strict_types=1);
 
-namespace Solido\Atlante\Tests\Requester\Response;
+namespace Solido\Atlante\Tests\Requester\Response\Parser\BadResponse;
 
 use Generator;
 use InvalidArgumentException;
 use PHPUnit\Framework\TestCase;
 use Solido\Atlante\Requester\Response\BadResponsePropertyTree;
+use Solido\Atlante\Requester\Response\Parser\BadResponse\JMSSerializerPropertyTreeParser;
+use Solido\Atlante\Requester\Response\Parser\BadResponse\KcsSerializerPropertyTreeParser;
 use Throwable;
 
 use function PHPUnit\Framework\assertCount;
 
-class BadResponsePropertyTreeTest extends TestCase
+class JMSSerializerPropertyTreeTest extends TestCase
 {
     /**
      * @param object|array<string,mixed>|string $content
@@ -21,7 +23,8 @@ class BadResponsePropertyTreeTest extends TestCase
      */
     public function testParse($content): void
     {
-        $parsed = BadResponsePropertyTree::parse($content);
+        $parser = new JMSSerializerPropertyTreeParser();
+        $parsed = $parser->parse($content);
         self::assertInstanceOf(BadResponsePropertyTree::class, $parsed);
         self::assertSame('', $parsed->getName());
         self::assertEmpty($parsed->getErrors());
@@ -52,19 +55,13 @@ class BadResponsePropertyTreeTest extends TestCase
     {
         yield [
             [
-                'name' => '',
-                'errors' => [],
                 'children' => [
-                    [
-                        'name' => 'foo',
+                    'foo' => [
                         'errors' => ['Required.'],
                     ],
-                    [
-                        'name' => 'bar',
-                        'errors' => [],
+                    'bar' => [
                         'children' => [
-                            [
-                                'name' => 'baz',
+                            'baz' => [
                                 'errors' => ['Bazbar'],
                             ],
                         ],
@@ -74,26 +71,20 @@ class BadResponsePropertyTreeTest extends TestCase
         ];
 
         yield [
-            ((object) [
-                'name' => '',
-                'errors' => [],
+            (object) [
                 'children' => [
-                    ((object) [
-                        'name' => 'foo',
+                    'foo' => (object) [
                         'errors' => ['Required.'],
-                    ]),
-                    ((object) [
-                        'name' => 'bar',
-                        'errors' => [],
-                        'children' => [
-                            ((object) [
-                                'name' => 'baz',
+                    ],
+                    'bar' => (object) [
+                        'children' => (object) [
+                            'baz' => (object) [
                                 'errors' => ['Bazbar'],
-                            ]),
+                            ],
                         ],
-                    ]),
+                    ],
                 ],
-            ]),
+            ],
         ];
     }
 
@@ -110,17 +101,16 @@ class BadResponsePropertyTreeTest extends TestCase
             $this->expectExceptionMessage($message);
         }
 
-        BadResponsePropertyTree::parse($content);
+        $parser = new JMSSerializerPropertyTreeParser();
+        $parser->parse($content);
     }
 
     public static function provideBadCases(): Generator
     {
         yield ['foobar', InvalidArgumentException::class, 'Unexpected response type, object or array expected, string given'];
-        yield [['name' => 'foobar'], InvalidArgumentException::class, 'Unable to parse missing `errors` property'];
-        yield [['errors' => ['foobar']], InvalidArgumentException::class, 'Missing `name` property'];
-        yield [['name' => ['foo'], 'errors' => ['foobar']], InvalidArgumentException::class, 'Invalid `name` property type, expected string, array given'];
-        yield [['errors' => 'foo', 'name' => 'foobar'], InvalidArgumentException::class, 'Invalid `errors` property type, expected array, string given'];
-        yield [['name' => 'foobar', 'errors' => [], 'children' => 'foobar'], InvalidArgumentException::class, 'Invalid `children` property type, expected array, string given'];
-        yield [['name' => 'foobar', 'errors' => [], 'children' => ['foobar']], InvalidArgumentException::class, 'Unexpected response type, object or array expected, string given'];
+        yield [['name' => 'foobar'], InvalidArgumentException::class, 'Invalid data format'];
+        yield [['errors' => 'foo'], InvalidArgumentException::class, 'Invalid `errors` property type, expected array, string given'];
+        yield [['errors' => [], 'children' => 'foobar'], InvalidArgumentException::class, 'Invalid `children` property type, expected array, string given'];
+        yield [['errors' => [], 'children' => ['foobar']], InvalidArgumentException::class, 'Unexpected response type, object or array expected, string given'];
     }
 }

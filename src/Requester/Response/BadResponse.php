@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Solido\Atlante\Requester\Response;
 
 use Solido\Atlante\Http\HeaderBag;
+use Solido\Atlante\Requester\Response\Parser\BadResponse\BadResponsePropertyTreeParserFactory;
 
 use function assert;
 
@@ -15,9 +16,9 @@ class BadResponse extends InvalidResponse
     /**
      * @param mixed[]|object|string $data
      */
-    public function __construct(HeaderBag $headers, $data)
+    public function __construct(HeaderBag $headers, $data, ?BadResponsePropertyTreeParserFactory $parserFactory = null)
     {
-        $data = BadResponsePropertyTree::parse($data);
+        $data = ($parserFactory ?? new BadResponsePropertyTreeParserFactory())->factory($data)->parse($data);
 
         parent::__construct(self::HTTP_STATUS, $headers, $data);
     }
