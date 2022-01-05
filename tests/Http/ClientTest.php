@@ -59,7 +59,7 @@ class ClientTest extends TestCase
 
     public function testDeleteRequest(): void
     {
-        $this->requester->request('DELETE', '/', ['accept' => ['application/json']], null)
+        $this->requester->request('DELETE', '/', ['accept' => ['application/json']], null, Argument::cetera())
             ->shouldBeCalled()
             ->willReturn(new Response(200, new HeaderBag(), []));
 
@@ -68,7 +68,7 @@ class ClientTest extends TestCase
 
     public function testGetRequest(): void
     {
-        $this->requester->request('GET', '/', ['accept' => ['application/json']], null)
+        $this->requester->request('GET', '/', ['accept' => ['application/json']], null, Argument::cetera())
             ->shouldBeCalled()
             ->willReturn(new Response(200, new HeaderBag(), []));
 
@@ -77,7 +77,7 @@ class ClientTest extends TestCase
 
     public function testPostRequest(): void
     {
-        $this->requester->request('POST', '/', ['accept' => ['application/json']], '{}')
+        $this->requester->request('POST', '/', ['accept' => ['application/json']], '{}', Argument::cetera())
             ->shouldBeCalled()
             ->willReturn(new Response(200, new HeaderBag(), []));
 
@@ -86,7 +86,7 @@ class ClientTest extends TestCase
 
     public function testPutRequest(): void
     {
-        $this->requester->request('PUT', '/', ['accept' => ['application/json']], '{}')
+        $this->requester->request('PUT', '/', ['accept' => ['application/json']], '{}', Argument::cetera())
             ->shouldBeCalled()
             ->willReturn(new Response(200, new HeaderBag(), []));
 
@@ -95,7 +95,7 @@ class ClientTest extends TestCase
 
     public function testPatchRequest(): void
     {
-        $this->requester->request('PATCH', '/', ['accept' => ['application/json']], '{}')
+        $this->requester->request('PATCH', '/', ['accept' => ['application/json']], '{}', Argument::cetera())
             ->shouldBeCalled()
             ->willReturn(new Response(200, new HeaderBag(), []));
 
@@ -107,7 +107,7 @@ class ClientTest extends TestCase
      */
     public function testRequestShouldClearRequestDataForDisallowedMethods(string $method): void
     {
-        $this->requester->request($method, '/', ['accept' => ['application/json']], null)
+        $this->requester->request($method, '/', ['accept' => ['application/json']], null, Argument::cetera())
             ->shouldBeCalled()
             ->willReturn(new Response(200, new HeaderBag(), []));
 
@@ -126,7 +126,7 @@ class ClientTest extends TestCase
         $this->requester->request('POST', '/', [
             'x-powered-by' => ['PHPUNIT'],
             'accept' => ['application/json'],
-        ], '{}')
+        ], '{}', Argument::cetera())
             ->shouldBeCalled()
             ->willReturn(new Response(200, new HeaderBag(), []));
 
@@ -169,7 +169,7 @@ class ClientTest extends TestCase
             'x-powered-by' => ['PHPUNIT'],
             'x-test' => ['great work!'],
             'accept' => ['application/json'],
-        ], 'decorated-body')
+        ], 'decorated-body', Argument::cetera())
             ->shouldBeCalled()
             ->willReturn(new Response(200, new HeaderBag(), []));
 
@@ -182,9 +182,13 @@ class ClientTest extends TestCase
     public function testShouldFilterResponseAndThrowIfInvalid(string $exceptionClass, AbstractResponse $response): void
     {
         $this->expectException($exceptionClass);
-        $this->requester->request('GET', '/', ['accept' => ['application/json']], null)
+        $this->requester->request('GET', '/', ['accept' => ['application/json']], null, false, Argument::type('callable'))
             ->shouldBeCalled()
-            ->willReturn($response);
+            ->will(function ($args) use ($response) {
+                ($args[5])($response);
+
+                return $response;
+            });
 
         try {
             $this->client->get('/', []);
@@ -213,7 +217,7 @@ class ClientTest extends TestCase
     public function testShouldNotNormalizeStreamBody(): void
     {
         $stream = fopen('php://temp', 'rb+');
-        $this->requester->request('POST', '/', ['accept' => ['application/json']], $stream)
+        $this->requester->request('POST', '/', ['accept' => ['application/json']], $stream, Argument::cetera())
             ->shouldBeCalled()
             ->willReturn(new Response(200, new HeaderBag(), []));
 
@@ -232,7 +236,7 @@ class ClientTest extends TestCase
             self::assertEquals('{"test":"great"}', $closure());
 
             return true;
-        }))
+        }), Argument::cetera())
             ->shouldBeCalled()
             ->willReturn(new Response(200, new HeaderBag(), []));
 
@@ -266,7 +270,7 @@ class ClientTest extends TestCase
             self::assertEquals('{"test":"great"}', $closure());
 
             return true;
-        }))
+        }), Argument::cetera())
             ->shouldBeCalled()
             ->willReturn(new Response(200, new HeaderBag(), []));
 
@@ -283,7 +287,7 @@ class ClientTest extends TestCase
             self::assertEquals('{"test":"great"}', $closure());
 
             return true;
-        }))
+        }), Argument::cetera())
             ->shouldBeCalled()
             ->willReturn(new Response(200, new HeaderBag(), []));
 
@@ -301,7 +305,7 @@ class ClientTest extends TestCase
             self::assertEquals('{"test":"great"}', $closure());
 
             return true;
-        }))
+        }), Argument::cetera())
             ->shouldBeCalled()
             ->willReturn(new Response(200, new HeaderBag(), []));
 
@@ -318,7 +322,7 @@ class ClientTest extends TestCase
             self::assertEquals('{"test":"great"}', $closure());
 
             return true;
-        }))
+        }), Argument::cetera())
             ->shouldBeCalled()
             ->willReturn(new Response(200, new HeaderBag(), []));
 

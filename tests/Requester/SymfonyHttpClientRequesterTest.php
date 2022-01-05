@@ -49,7 +49,7 @@ class SymfonyHttpClientRequesterTest extends TestCase
     public function testShouldAcceptStreamsAsBody(): void
     {
         $r = new MockResponse();
-        $this->responseFactory->fromResponse($r)
+        $this->responseFactory->fromResponse($r, false, null)
             ->shouldBeCalled()
             ->willReturn(new SolidoResponse(200, new HeaderBag(), null));
 

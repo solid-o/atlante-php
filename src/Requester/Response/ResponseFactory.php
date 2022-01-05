@@ -13,16 +13,26 @@ use function Safe\sprintf;
 
 class ResponseFactory extends AbstractResponseFactory
 {
-    public function fromResponse(object $response): ResponseInterface
+    public function fromResponse(object $response, bool $lazy = false, ?callable $filter = null): ResponseInterface
     {
         if (! $response instanceof PsrResponseInterface) {
             throw new TypeError(sprintf('Argument 1 passed to %s must be an instance of %s, %s passed.', __METHOD__, PsrResponseInterface::class, get_debug_type($response)));
         }
 
-        return $this->makeResponse(
-            $response->getStatusCode(),
-            new HeaderBag($response->getHeaders()),
-            (string) $response->getBody()
-        );
+        $builder = function () use ($response, $filter): ResponseInterface {
+            $response = $this->makeResponse(
+                $response->getStatusCode(),
+                new HeaderBag($response->getHeaders()),
+                (string) $response->getBody()
+            );
+
+            if ($filter !== null) {
+                $filter($response);
+            }
+
+            return $response;
+        };
+
+        return $lazy ? new LazyResponse($builder) : $builder();
     }
 }

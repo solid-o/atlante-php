@@ -80,7 +80,7 @@ class Client implements ClientInterface
     }
 
     /** {@inheritdoc} */
-    public function request(string $method, string $path, $requestData = null, ?array $headers = null): ResponseInterface
+    public function request(string $method, string $path, $requestData = null, ?array $headers = null, bool $throw = true, bool $lazy = false): ResponseInterface
     {
         if (in_array($method, ['GET', 'HEAD', 'DELETE'])) {
             $requestData = null;
@@ -100,16 +100,16 @@ class Client implements ClientInterface
             $headerBag->set('Accept', 'application/json');
         }
 
-        $response = $this->requester->request(
+        $filter = $throw ? static fn (ResponseInterface $response) => static::filterResponse($response) : null;
+
+        return $this->requester->request(
             $request->getMethod(),
             $request->getUrl(),
             $headerBag->all(),
-            $request->getBody()
+            $request->getBody(),
+            $lazy,
+            $filter,
         );
-
-        self::filterResponse($response);
-
-        return $response;
     }
 
     /**
@@ -124,9 +124,7 @@ class Client implements ClientInterface
         }
 
         $doNormalizeBody = static function (Request $request): Request {
-            $decorator = new BodyConverterDecorator();
-
-            return $decorator->decorate($request);
+            return (new BodyConverterDecorator())->decorate($request);
         };
 
         if (is_callable($body)) {

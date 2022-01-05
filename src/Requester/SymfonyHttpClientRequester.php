@@ -23,7 +23,7 @@ class SymfonyHttpClientRequester implements RequesterInterface
     /**
      * {@inheritdoc}
      */
-    public function request(string $method, string $uri, array $headers, $requestData = null): ResponseInterface
+    public function request(string $method, string $uri, array $headers, $requestData = null, bool $lazy = false, ?callable $filter = null): ResponseInterface
     {
         $response = $this->client->request($method, $uri, [
             'headers' => $headers,
@@ -31,6 +31,6 @@ class SymfonyHttpClientRequester implements RequesterInterface
             'max_redirects' => 0,
         ]);
 
-        return $this->responseFactory->fromResponse($response);
+        return $this->responseFactory->fromResponse($response, $lazy, $filter);
     }
 }

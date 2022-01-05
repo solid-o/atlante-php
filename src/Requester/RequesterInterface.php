@@ -15,5 +15,5 @@ interface RequesterInterface
      * @param array<string, string|string[]> $headers
      * @param callable|string|resource|null  $requestData
      */
-    public function request(string $method, string $uri, array $headers, $requestData = null): ResponseInterface;
+    public function request(string $method, string $uri, array $headers, $requestData = null, bool $lazy = false, ?callable $filter = null): ResponseInterface;
 }
