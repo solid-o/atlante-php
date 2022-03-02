@@ -103,13 +103,13 @@ abstract class AbstractClientTest extends TestCase
     public function test404(): void
     {
         $this->expectException(NotFoundException::class);
-        $this->client->get('/404');
+        $this->client->get('/404')->getStatusCode();
     }
 
     public function testShouldNotFollowRedirects(): void
     {
         try {
-            $this->client->get('/302');
+            $this->client->get('/302')->getStatusCode();
 
             throw new Exception('Should not reach this point');
         } catch (InvalidRequestException $e) {
@@ -125,7 +125,7 @@ abstract class AbstractClientTest extends TestCase
     public function testShouldNotFollow307Redirects(): void
     {
         try {
-            $this->client->post('/307');
+            $this->client->post('/307')->getStatusCode();
 
             throw new Exception('Should not reach this point');
         } catch (InvalidRequestException $e) {

@@ -50,37 +50,37 @@ class Client implements ClientInterface
     }
 
     /** {@inheritdoc} */
-    public function delete(string $path, ?array $headers = null): ResponseInterface
+    public function delete(string $path, ?array $headers = null, bool $throw = true): ResponseInterface
     {
-        return $this->request('DELETE', $path, null, $headers);
+        return $this->request('DELETE', $path, null, $headers, $throw);
     }
 
     /** {@inheritdoc} */
-    public function get(string $path, ?array $headers = null): ResponseInterface
+    public function get(string $path, ?array $headers = null, bool $throw = true): ResponseInterface
     {
-        return $this->request('GET', $path, null, $headers);
+        return $this->request('GET', $path, null, $headers, $throw);
     }
 
     /** {@inheritdoc} */
-    public function post(string $path, $requestData = null, ?array $headers = null): ResponseInterface
+    public function post(string $path, $requestData = null, ?array $headers = null, bool $throw = true): ResponseInterface
     {
-        return $this->request('POST', $path, $requestData, $headers);
+        return $this->request('POST', $path, $requestData, $headers, $throw);
     }
 
     /** {@inheritdoc} */
-    public function put(string $path, $requestData = null, ?array $headers = null): ResponseInterface
+    public function put(string $path, $requestData = null, ?array $headers = null, bool $throw = true): ResponseInterface
     {
-        return $this->request('PUT', $path, $requestData, $headers);
+        return $this->request('PUT', $path, $requestData, $headers, $throw);
     }
 
     /** {@inheritdoc} */
-    public function patch(string $path, $requestData = null, ?array $headers = null): ResponseInterface
+    public function patch(string $path, $requestData = null, ?array $headers = null, bool $throw = true): ResponseInterface
     {
-        return $this->request('PATCH', $path, $requestData, $headers);
+        return $this->request('PATCH', $path, $requestData, $headers, $throw);
     }
 
     /** {@inheritdoc} */
-    public function request(string $method, string $path, $requestData = null, ?array $headers = null, bool $throw = true, bool $lazy = false): ResponseInterface
+    public function request(string $method, string $path, $requestData = null, ?array $headers = null, bool $throw = true): ResponseInterface
     {
         if (in_array($method, ['GET', 'HEAD', 'DELETE'])) {
             $requestData = null;
@@ -107,7 +107,6 @@ class Client implements ClientInterface
             $request->getUrl(),
             $headerBag->all(),
             $request->getBody(),
-            $lazy,
             $filter,
         );
     }

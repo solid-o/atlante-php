@@ -182,10 +182,10 @@ class ClientTest extends TestCase
     public function testShouldFilterResponseAndThrowIfInvalid(string $exceptionClass, AbstractResponse $response): void
     {
         $this->expectException($exceptionClass);
-        $this->requester->request('GET', '/', ['accept' => ['application/json']], null, false, Argument::type('callable'))
+        $this->requester->request('GET', '/', ['accept' => ['application/json']], null, Argument::type('callable'))
             ->shouldBeCalled()
             ->will(function ($args) use ($response) {
-                ($args[5])($response);
+                ($args[4])($response);
 
                 return $response;
             });

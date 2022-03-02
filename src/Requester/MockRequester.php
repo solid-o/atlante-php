@@ -29,7 +29,7 @@ final class MockRequester implements RequesterInterface
      *
      * {@inheritdoc}
      */
-    public function request(string $method, string $uri, array $headers, $requestData = null, bool $lazy = false, ?callable $filter = null): ResponseInterface
+    public function request(string $method, string $uri, array $headers, $requestData = null, ?callable $filter = null): ResponseInterface
     {
         $response = array_shift($this->responses);
         if ($response === null) {

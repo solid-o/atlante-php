@@ -36,7 +36,7 @@ class PsrClientRequester implements RequesterInterface
     /**
      * {@inheritdoc}
      */
-    public function request(string $method, string $uri, array $headers, $requestData = null, bool $lazy = false, ?callable $filter = null): ResponseInterface
+    public function request(string $method, string $uri, array $headers, $requestData = null, ?callable $filter = null): ResponseInterface
     {
         $request = $this->requestFactory->createRequest($method, $uri);
         foreach ($headers as $key => $value) {
@@ -60,6 +60,6 @@ class PsrClientRequester implements RequesterInterface
 
         $response = $this->client->sendRequest($request);
 
-        return $this->responseFactory->fromResponse($response, $lazy, $filter);
+        return $this->responseFactory->fromResponse($response, $filter);
     }
 }

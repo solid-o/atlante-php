@@ -13,8 +13,8 @@ use Solido\Atlante\Requester\Response\AccessDeniedResponse;
 use Solido\Atlante\Requester\Response\BadResponse;
 use Solido\Atlante\Requester\Response\BadResponsePropertyTree;
 use Solido\Atlante\Requester\Response\InvalidResponse;
+use Solido\Atlante\Requester\Response\LazyResponse;
 use Solido\Atlante\Requester\Response\NotFoundResponse;
-use Solido\Atlante\Requester\Response\Parser\BadResponse\KcsSerializerPropertyTreeParser;
 use Solido\Atlante\Requester\Response\Response;
 use Solido\Atlante\Requester\Response\ResponseFactory;
 use Solido\Atlante\Requester\Response\ResponseFactoryInterface;
@@ -35,6 +35,9 @@ class ResponseFactoryTest extends TestCase
     public function testFromResponse($requesterResponse, ResponseFactoryInterface $factory, string $responseClassname, int $statusCode, $expectedData, array $expectedHeaders): void
     {
         $response = $factory->fromResponse($requesterResponse);
+
+        self::assertInstanceOf(LazyResponse::class, $response);
+        $response = (fn () => $this->getResponse())->bindTo($response, LazyResponse::class)();
 
         self::assertInstanceOf($responseClassname, $response);
         self::assertEquals($statusCode, $response->getStatusCode());

@@ -51,7 +51,7 @@ class PsrClientRequesterTest extends TestCase
     public function testShouldAcceptStreamsAsBody(): void
     {
         $r = new Response();
-        $this->responseFactory->fromResponse($r, false, null)
+        $this->responseFactory->fromResponse($r, null)
             ->shouldBeCalled()
             ->willReturn(new SolidoResponse(200, new HeaderBag(), null));
 
@@ -71,7 +71,7 @@ class PsrClientRequesterTest extends TestCase
     public function testShouldAcceptStringsAsBody(): void
     {
         $r = new Response();
-        $this->responseFactory->fromResponse($r, false, null)
+        $this->responseFactory->fromResponse($r, null)
             ->shouldBeCalled()
             ->willReturn(new SolidoResponse(200, new HeaderBag(), null));
 
@@ -91,7 +91,7 @@ class PsrClientRequesterTest extends TestCase
     public function testShouldAcceptCallablesAsBody(): void
     {
         $r = new Response();
-        $this->responseFactory->fromResponse($r, false, null)
+        $this->responseFactory->fromResponse($r, null)
             ->shouldBeCalled()
             ->willReturn(new SolidoResponse(200, new HeaderBag(), null));
 

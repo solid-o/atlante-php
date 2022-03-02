@@ -6,5 +6,5 @@ namespace Solido\Atlante\Requester\Response;
 
 interface ResponseFactoryInterface
 {
-    public function fromResponse(object $response, bool $lazy = false, ?callable $filter = null): ResponseInterface;
+    public function fromResponse(object $response, ?callable $filter = null): ResponseInterface;
 }
