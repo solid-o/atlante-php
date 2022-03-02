@@ -33,6 +33,8 @@ use const DATE_RFC2822;
 
 /**
  * HeaderBag is a container for HTTP headers.
+ *
+ * @implements IteratorAggregate<string, string[]>
  */
 class HeaderBag implements IteratorAggregate, Countable
 {
@@ -286,6 +288,7 @@ class HeaderBag implements IteratorAggregate, Countable
      * Returns an iterator for headers.
      *
      * @return ArrayIterator An \ArrayIterator instance
+     * @phpstan-return ArrayIterator<string, string[]>
      */
     public function getIterator(): ArrayIterator
     {

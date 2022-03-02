@@ -21,8 +21,8 @@ use function Safe\sprintf;
 class Request
 {
     /**
-     * @var array|string|resource|Closure<string>|iterable<string>|null
-     * @phpstan-var array|string|resource|Closure(): string|iterable<string>|null
+     * @var array<array-key, mixed>|string|resource|Closure|iterable<string>|null
+     * @phpstan-var array<array-key, mixed>|string|resource|Closure(): string|iterable<string>|null
      */
     private $body;
 
@@ -31,9 +31,9 @@ class Request
     private string $url;
 
     /**
-     * @param array|string|resource|Closure<string>|iterable<string>|null $body
+     * @param array<array-key, mixed>|string|resource|Closure|iterable<string>|null $body
      * @param string[]|string[][]|null                                       $headers
-     * @phpstan-param array|string|resource|Closure(): string|iterable<string>|null $body
+     * @phpstan-param array<array-key, mixed>|string|resource|Closure(): string|iterable<string>|null $body
      */
     public function __construct(string $method, string $url, ?array $headers = null, $body = null)
     {
@@ -44,8 +44,8 @@ class Request
     }
 
     /**
-     * @return array|string|resource|Closure<string>|iterable<string>|null
-     * @phpstan-return array|string|resource|Closure(): string|iterable<string>|null
+     * @return array<array-key, mixed>|string|resource|Closure|iterable<string>|null
+     * @phpstan-return array<array-key, mixed>|string|resource|Closure(): string|iterable<string>|null
      */
     public function getBody()
     {

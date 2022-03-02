@@ -121,10 +121,10 @@ class BodyConverterDecorator implements DecoratorInterface
 
     /**
      * @param array|string|resource|Closure|iterable<string>|null $body
-     * @phpstan-param array|string|resource|Closure(): string|iterable<string>|null $body
+     * @phpstan-param array<array-key, mixed>|string|resource|Closure(): string|iterable<string>|null $body
      *
-     * @return array<mixed, mixed>|resource|string|Closure<string>|null
-     * @phpstan-return array<mixed, mixed>|resource|string|Closure(): string|null
+     * @return array<array-key, mixed>|resource|string|Closure|null
+     * @phpstan-return array<array-key, mixed>|resource|string|Closure(): string|null
      */
     private function prepare($body)
     {
