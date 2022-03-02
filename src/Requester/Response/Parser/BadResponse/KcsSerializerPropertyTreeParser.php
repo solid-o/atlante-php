@@ -8,7 +8,9 @@ use InvalidArgumentException;
 use Solido\Atlante\Requester\Response\BadResponsePropertyTree;
 use stdClass;
 
+use function array_filter;
 use function array_map;
+use function count;
 use function get_debug_type;
 use function is_array;
 use function is_string;
@@ -28,7 +30,8 @@ class KcsSerializerPropertyTreeParser implements BadResponsePropertyTreeParserIn
         return is_array($data) &&
             is_array($data['errors'] ?? null) &&
             is_string($data['name'] ?? null) &&
-            is_array($data['children'] ?? []);
+            is_array($data['children'] ?? []) &&
+            count(array_filter(array_map([$this, 'supports'], $data['children'] ?? []), static fn ($v) => $v !== true)) === 0;
     }
 
     /**

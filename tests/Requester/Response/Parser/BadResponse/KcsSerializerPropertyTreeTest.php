@@ -40,7 +40,7 @@ class KcsSerializerPropertyTreeTest extends TestCase
         self::assertSame('bar', $children[1]->getName());
         self::assertEmpty($children[1]->getErrors());
         $subchildren = $children[1]->getChildren();
-        assertCount(1, $subchildren);
+        self::assertCount(1, $subchildren);
         foreach ($subchildren as $child) {
             self::assertInstanceOf(BadResponsePropertyTree::class, $child);
         }
@@ -114,6 +114,28 @@ class KcsSerializerPropertyTreeTest extends TestCase
 
         $parser = new KcsSerializerPropertyTreeParser();
         $parser->parse($content);
+    }
+
+    /**
+     * @param object|array<string,mixed>|string $content
+     *
+     * @dataProvider provideParseCases
+     */
+    public function testSupports($content): void
+    {
+        $parser = new KcsSerializerPropertyTreeParser();
+        self::assertTrue($parser->supports($content));
+    }
+
+    /**
+     * @param object|array<string,mixed>|string $content
+     *
+     * @dataProvider provideBadCases
+     */
+    public function testSupportsOnBadCases($content): void
+    {
+        $parser = new KcsSerializerPropertyTreeParser();
+        self::assertFalse($parser->supports($content));
     }
 
     public static function provideBadCases(): Generator

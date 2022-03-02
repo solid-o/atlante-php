@@ -9,7 +9,6 @@ use InvalidArgumentException;
 use PHPUnit\Framework\TestCase;
 use Solido\Atlante\Requester\Response\BadResponsePropertyTree;
 use Solido\Atlante\Requester\Response\Parser\BadResponse\JMSSerializerPropertyTreeParser;
-use Solido\Atlante\Requester\Response\Parser\BadResponse\KcsSerializerPropertyTreeParser;
 use Throwable;
 
 use function PHPUnit\Framework\assertCount;
@@ -103,6 +102,28 @@ class JMSSerializerPropertyTreeTest extends TestCase
 
         $parser = new JMSSerializerPropertyTreeParser();
         $parser->parse($content);
+    }
+
+    /**
+     * @param object|array<string,mixed>|string $content
+     *
+     * @dataProvider provideParseCases
+     */
+    public function testSupports($content): void
+    {
+        $parser = new JMSSerializerPropertyTreeParser();
+        self::assertTrue($parser->supports($content));
+    }
+
+    /**
+     * @param object|array<string,mixed>|string $content
+     *
+     * @dataProvider provideBadCases
+     */
+    public function testSupportsOnBadCases($content): void
+    {
+        $parser = new JMSSerializerPropertyTreeParser();
+        self::assertFalse($parser->supports($content));
     }
 
     public static function provideBadCases(): Generator

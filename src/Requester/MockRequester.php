@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Solido\Atlante\Requester;
 
 use RuntimeException;
+use Solido\Atlante\Requester\Response\LazyResponse;
 use Solido\Atlante\Requester\Response\ResponseInterface;
 
 use function array_shift;
@@ -36,10 +37,12 @@ final class MockRequester implements RequesterInterface
             throw new RuntimeException('Empty response list');
         }
 
-        if ($filter !== null) {
-            $filter($response);
-        }
+        return new LazyResponse(static function () use ($filter, $response): ResponseInterface {
+            if ($filter !== null) {
+                $filter($response);
+            }
 
-        return $response;
+            return $response;
+        });
     }
 }

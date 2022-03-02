@@ -24,6 +24,7 @@ use Solido\Atlante\Requester\Response\AbstractResponse;
 use Solido\Atlante\Requester\Response\AccessDeniedResponse;
 use Solido\Atlante\Requester\Response\BadResponse;
 use Solido\Atlante\Requester\Response\InvalidResponse;
+use Solido\Atlante\Requester\Response\LazyResponse;
 use Solido\Atlante\Requester\Response\NotFoundResponse;
 use Solido\Atlante\Requester\Response\Response;
 use TypeError;
@@ -59,47 +60,82 @@ class ClientTest extends TestCase
 
     public function testDeleteRequest(): void
     {
-        $this->requester->request('DELETE', '/', ['accept' => ['application/json']], null, Argument::cetera())
+        $this->requester->request('DELETE', '/', ['accept' => ['application/json']], null, Argument::type('callable'))
             ->shouldBeCalled()
-            ->willReturn(new Response(200, new HeaderBag(), []));
+            ->will(function ($args) {
+                return new LazyResponse(static function () use ($args) {
+                    $response = new Response(200, new HeaderBag(), []);
+                    $args[4]($response);
 
-        $this->client->delete('/', []);
+                    return $response;
+                });
+            });
+
+        $this->client->delete('/', [])->getStatusCode();
     }
 
     public function testGetRequest(): void
     {
-        $this->requester->request('GET', '/', ['accept' => ['application/json']], null, Argument::cetera())
+        $this->requester->request('GET', '/', ['accept' => ['application/json']], null, Argument::type('callable'))
             ->shouldBeCalled()
-            ->willReturn(new Response(200, new HeaderBag(), []));
+            ->will(function ($args) {
+                return new LazyResponse(static function () use ($args) {
+                    $response = new Response(200, new HeaderBag(), []);
+                    $args[4]($response);
 
-        $this->client->get('/', []);
+                    return $response;
+                });
+            });
+
+        $this->client->get('/', [])->getStatusCode();
     }
 
     public function testPostRequest(): void
     {
-        $this->requester->request('POST', '/', ['accept' => ['application/json']], '{}', Argument::cetera())
+        $this->requester->request('POST', '/', ['accept' => ['application/json']], '{}', Argument::type('callable'))
             ->shouldBeCalled()
-            ->willReturn(new Response(200, new HeaderBag(), []));
+            ->will(function ($args) {
+                return new LazyResponse(static function () use ($args) {
+                    $response = new Response(200, new HeaderBag(), []);
+                    $args[4]($response);
 
-        $this->client->post('/', '{}', []);
+                    return $response;
+                });
+            });
+
+        $this->client->post('/', '{}', [])->getStatusCode();
     }
 
     public function testPutRequest(): void
     {
-        $this->requester->request('PUT', '/', ['accept' => ['application/json']], '{}', Argument::cetera())
+        $this->requester->request('PUT', '/', ['accept' => ['application/json']], '{}', Argument::type('callable'))
             ->shouldBeCalled()
-            ->willReturn(new Response(200, new HeaderBag(), []));
+            ->will(function ($args) {
+                return new LazyResponse(static function () use ($args) {
+                    $response = new Response(200, new HeaderBag(), []);
+                    $args[4]($response);
 
-        $this->client->put('/', '{}', []);
+                    return $response;
+                });
+            });
+
+        $this->client->put('/', '{}', [])->getStatusCode();
     }
 
     public function testPatchRequest(): void
     {
-        $this->requester->request('PATCH', '/', ['accept' => ['application/json']], '{}', Argument::cetera())
+        $this->requester->request('PATCH', '/', ['accept' => ['application/json']], '{}', Argument::type('callable'))
             ->shouldBeCalled()
-            ->willReturn(new Response(200, new HeaderBag(), []));
+            ->will(function ($args) {
+                return new LazyResponse(static function () use ($args) {
+                    $response = new Response(200, new HeaderBag(), []);
+                    $args[4]($response);
 
-        $this->client->patch('/', '{}', []);
+                    return $response;
+                });
+            });
+
+        $this->client->patch('/', '{}', [])->getStatusCode();
     }
 
     /**
@@ -107,11 +143,34 @@ class ClientTest extends TestCase
      */
     public function testRequestShouldClearRequestDataForDisallowedMethods(string $method): void
     {
-        $this->requester->request($method, '/', ['accept' => ['application/json']], null, Argument::cetera())
+        $this->requester->request($method, '/', ['accept' => ['application/json']], null, Argument::type('callable'))
             ->shouldBeCalled()
-            ->willReturn(new Response(200, new HeaderBag(), []));
+            ->will(function ($args) {
+                return new LazyResponse(static function () use ($args) {
+                    $response = new Response(200, new HeaderBag(), []);
+                    $args[4]($response);
 
-        $this->client->request($method, '/', 'test', []);
+                    return $response;
+                });
+            });
+
+        $this->client->request($method, '/', 'test', [])->getStatusCode();
+    }
+
+    /**
+     * @dataProvider provideNoBodyMethods
+     */
+    public function testRequestShouldNotThrowIfThrowParameterIsFalse(string $method): void
+    {
+        $this->requester->request($method, '/', ['accept' => ['application/json']], null, null)
+            ->shouldBeCalled()
+            ->will(function () {
+                return new LazyResponse(static function () {
+                    return new Response(500, new HeaderBag(), []);
+                });
+            });
+
+        $this->client->request($method, '/', 'test', [], false)->getStatusCode();
     }
 
     public function provideNoBodyMethods(): iterable
