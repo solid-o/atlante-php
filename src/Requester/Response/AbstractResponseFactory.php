@@ -21,9 +21,10 @@ abstract class AbstractResponseFactory implements ResponseFactoryInterface
 {
     protected function makeResponse(int $statusCode, HeaderBag $headers, string $body): ResponseInterface
     {
+        $contentType = $headers->get('content-type', 'text/html');
         $data = static::decodeData($headers, $body);
 
-        if (is_array($data) || is_object($data)) {
+        if (is_array($data) || is_object($data) || strpos($contentType, 'application/problem+') === 0) {
             if ($statusCode < 300 && $statusCode >= 200) {
                 return new Response($statusCode, $headers, $data);
             }
