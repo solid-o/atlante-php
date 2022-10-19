@@ -24,7 +24,7 @@ abstract class AbstractResponseFactory implements ResponseFactoryInterface
         $contentType = $headers->get('content-type', 'text/html');
         $data = static::decodeData($headers, $body);
 
-        if (is_array($data) || is_object($data) || strpos($contentType, 'application/problem+') === 0) {
+        if (is_array($data) || is_object($data) || strpos($contentType ?? '', 'application/problem+') === 0) {
             if ($statusCode < 300 && $statusCode >= 200) {
                 return new Response($statusCode, $headers, $data);
             }

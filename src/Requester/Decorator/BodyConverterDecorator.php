@@ -28,6 +28,7 @@ use function Safe\substr;
 use function stream_get_meta_data;
 use function strlen;
 use function strpos;
+use function strrev;
 
 use const PHP_QUERY_RFC1738;
 
@@ -103,7 +104,7 @@ class BodyConverterDecorator implements DecoratorInterface
     {
         $contentType = $headers->get('content-type') ?? 'application/x-www-form-urlencoded';
 
-        if (strpos($contentType, 'application/json') === 0) {
+        if (strpos($contentType, 'application/json') === 0 || (strpos($contentType, 'application/') === 0 && strpos(strrev($contentType), 'nosj+') === 0)) {
             $body = json_encode($body);
         } elseif (strpos($contentType, 'application/x-www-form-urlencoded') === 0) {
             $body = http_build_query($body, '', '&', PHP_QUERY_RFC1738);
