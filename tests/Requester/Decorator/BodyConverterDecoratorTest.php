@@ -16,7 +16,7 @@ use UnexpectedValueException;
 use function curl_init;
 use function is_callable;
 use function json_encode;
-use function Safe\fopen;
+use function fopen;
 
 use const JSON_THROW_ON_ERROR;
 

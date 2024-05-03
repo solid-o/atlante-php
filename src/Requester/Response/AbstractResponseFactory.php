@@ -33,7 +33,7 @@ abstract class AbstractResponseFactory implements ResponseFactoryInterface
                 case 400:
                     try {
                         return new BadResponse($headers, $data);
-                    } catch (InvalidArgumentException $e) {
+                    } catch (InvalidArgumentException) {
                         // @ignoreException
                     }
 
@@ -50,10 +50,7 @@ abstract class AbstractResponseFactory implements ResponseFactoryInterface
         return new InvalidResponse($statusCode, $headers, $data);
     }
 
-    /**
-     * @return mixed[]|object|string
-     */
-    protected static function decodeData(HeaderBag $headers, string $data)
+    protected static function decodeData(HeaderBag $headers, string $data): mixed
     {
         $contentType = $headers->get('content-type', 'text/html');
         assert(is_string($contentType));
@@ -61,7 +58,7 @@ abstract class AbstractResponseFactory implements ResponseFactoryInterface
         if (strpos($contentType, 'application/json') === 0) {
             try {
                 $data = json_decode($data, false, 512, JSON_THROW_ON_ERROR);
-            } catch (JsonException $e) {
+            } catch (JsonException) {
                 // @ignoreException
             }
         }

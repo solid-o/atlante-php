@@ -13,6 +13,7 @@ use UnexpectedValueException;
 
 use function assert;
 use function feof;
+use function fread;
 use function get_debug_type;
 use function http_build_query;
 use function is_array;
@@ -21,15 +22,15 @@ use function is_iterable;
 use function is_resource;
 use function is_scalar;
 use function is_string;
-use function Safe\fread;
-use function Safe\json_encode;
-use function Safe\sprintf;
-use function Safe\substr;
+use function json_encode;
+use function sprintf;
+use function str_starts_with;
 use function stream_get_meta_data;
 use function strlen;
-use function strpos;
 use function strrev;
+use function substr;
 
+use const JSON_THROW_ON_ERROR;
 use const PHP_QUERY_RFC1738;
 
 /**
@@ -52,14 +53,14 @@ class BodyConverterDecorator implements DecoratorInterface
                 $headers->set('content-type', $contentType);
             }
 
-            $generator = function (?int $length = null) use ($body, $headers): Generator {
+            $generator = function (int|null $length = null) use ($body, $headers): Generator {
                 $body = $this->prepare($body);
 
                 if (is_iterable($body)) {
                     $body = self::encodeIterable($body, $headers);
                 }
 
-                if ($length === null) {
+                if ($length === null || $length < 0) {
                     yield $body;
 
                     return;
@@ -81,7 +82,7 @@ class BodyConverterDecorator implements DecoratorInterface
                 yield '';
             };
 
-            $doHandle = static function (?int $length = null) use (&$generator) {
+            $doHandle = static function (int|null $length = null) use (&$generator) {
                 if (is_callable($generator)) {
                     $generator = $generator($length);
                 } else {
@@ -97,23 +98,21 @@ class BodyConverterDecorator implements DecoratorInterface
         return new Request($request->getMethod(), $request->getUrl(), $headers->all(), $body);
     }
 
-    /**
-     * @param iterable<string> $body
-     */
+    /** @param iterable<string> $body */
     private static function encodeIterable(iterable $body, HeaderBag $headers): string
     {
         $contentType = $headers->get('content-type') ?? 'application/x-www-form-urlencoded';
 
-        if (strpos($contentType, 'application/json') === 0 || (strpos($contentType, 'application/') === 0 && strpos(strrev($contentType), 'nosj+') === 0)) {
-            $body = json_encode($body);
-        } elseif (strpos($contentType, 'application/x-www-form-urlencoded') === 0) {
+        if (str_starts_with($contentType, 'application/json') || (str_starts_with($contentType, 'application/') && str_starts_with(strrev($contentType), 'nosj+'))) {
+            $body = json_encode($body, JSON_THROW_ON_ERROR);
+        } elseif (str_starts_with($contentType, 'application/x-www-form-urlencoded')) {
             $body = http_build_query($body, '', '&', PHP_QUERY_RFC1738);
         } else {
             throw new UnexpectedValueException(
                 sprintf(
                     'Unable to convert Request content body: expected "application/json" or "application/x-www-form-urlencoded" `content-type` header, "%s" given',
-                    $contentType
-                )
+                    $contentType,
+                ),
             );
         }
 

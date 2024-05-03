@@ -14,14 +14,11 @@ use function count;
 use function get_debug_type;
 use function is_array;
 use function is_string;
-use function Safe\sprintf;
+use function sprintf;
 
 class JMSSerializerPropertyTreeParser implements BadResponsePropertyTreeParserInterface
 {
-    /**
-     * @inheritDoc
-     */
-    public function supports($data): bool
+    public function supports(mixed $data): bool
     {
         if ($data instanceof stdClass) {
             $data = (array) $data;
@@ -34,10 +31,7 @@ class JMSSerializerPropertyTreeParser implements BadResponsePropertyTreeParserIn
             count(array_filter(array_map([$this, 'supports'], (array) ($data['children'] ?? [])), static fn ($v) => $v !== true)) === 0;
     }
 
-    /**
-     * @inheritDoc
-     */
-    public function parse($data, string $name = ''): BadResponsePropertyTree
+    public function parse(mixed $data, string $name = ''): BadResponsePropertyTree
     {
         if (is_string($data)) {
             throw new InvalidArgumentException('Unexpected response type, object or array expected, string given');

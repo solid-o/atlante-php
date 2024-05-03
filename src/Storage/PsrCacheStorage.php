@@ -4,20 +4,16 @@ declare(strict_types=1);
 
 namespace Solido\Atlante\Storage;
 
+use DateTime;
 use Psr\Cache\CacheItemPoolInterface;
-use Safe\DateTime;
 
-use function Safe\sprintf;
+use function sprintf;
 
 class PsrCacheStorage extends AbstractStorage
 {
-    private CacheItemPoolInterface $itemPool;
-
-    public function __construct(CacheItemPoolInterface $itemPool, int $defaultLifetime = 0)
+    public function __construct(private CacheItemPoolInterface $itemPool, int $defaultLifetime = 0)
     {
         parent::__construct($defaultLifetime);
-
-        $this->itemPool = $itemPool;
     }
 
     public function clear(): bool
@@ -35,10 +31,7 @@ class PsrCacheStorage extends AbstractStorage
         return $this->itemPool->deleteItem($key);
     }
 
-    /**
-     * @inheritDoc
-     */
-    protected function doGetItem(string $key)
+    protected function doGetItem(string $key): mixed
     {
         $item = $this->itemPool->getItem($key);
         if ($item->isHit()) {
@@ -48,10 +41,11 @@ class PsrCacheStorage extends AbstractStorage
         return null;
     }
 
-    protected function doSave(string $key, string $value, ?float $expiry): bool
+    protected function doSave(string $key, string $value, float|null $expiry): bool
     {
         $item = $this->itemPool->getItem($key);
         if ($expiry !== null) {
+            /** @phpstan-ignore-next-line */
             $item->expiresAt(DateTime::createFromFormat('U.u', sprintf('%.3f', $expiry)));
         }
 

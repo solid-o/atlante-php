@@ -6,11 +6,11 @@ namespace Solido\Atlante\Storage;
 
 use Closure;
 use DateInterval;
+use DateTime;
 use InvalidArgumentException;
-use Safe\DateTime;
 
-use function Safe\sprintf;
 use function serialize;
+use function sprintf;
 use function unserialize;
 
 abstract class AbstractStorage implements StorageInterface
@@ -36,7 +36,7 @@ abstract class AbstractStorage implements StorageInterface
                 return $item;
             },
             null,
-            Item::class
+            Item::class,
         );
 
         $this->getExpiration = Closure::bind(
@@ -44,7 +44,7 @@ abstract class AbstractStorage implements StorageInterface
                 return $item->expiry;
             },
             null,
-            Item::class
+            Item::class,
         );
 
         $this->getDefaultLifetime = Closure::bind(
@@ -52,7 +52,7 @@ abstract class AbstractStorage implements StorageInterface
                 return $item->defaultLifetime;
             },
             null,
-            Item::class
+            Item::class,
         );
     }
 
@@ -105,13 +105,11 @@ abstract class AbstractStorage implements StorageInterface
 
     /**
      * Gets an item from the storage.
-     *
-     * @return mixed
      */
-    abstract protected function doGetItem(string $key);
+    abstract protected function doGetItem(string $key): mixed;
 
     /**
      * Saves an item on the storage.
      */
-    abstract protected function doSave(string $key, string $value, ?float $expiry): bool;
+    abstract protected function doSave(string $key, string $value, float|null $expiry): bool;
 }

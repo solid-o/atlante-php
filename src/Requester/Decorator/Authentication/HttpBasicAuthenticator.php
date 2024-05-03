@@ -13,7 +13,7 @@ class HttpBasicAuthenticator implements DecoratorInterface
 {
     private string $auth;
 
-    public function __construct(string $usernameOrEncodedAuth, ?string $password = null)
+    public function __construct(string $usernameOrEncodedAuth, string|null $password = null)
     {
         $this->auth = $password === null ? $usernameOrEncodedAuth : base64_encode($usernameOrEncodedAuth . (! empty($password) ? ':' . $password : ''));
     }

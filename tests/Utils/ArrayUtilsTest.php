@@ -17,7 +17,7 @@ class ArrayUtilsTest extends TestCase
         self::assertEquals($expected, ArrayUtils::toCamelCaseKeys($input));
     }
 
-    public function provideDataToCamelCaseKeys(): iterable
+    public static function provideDataToCamelCaseKeys(): iterable
     {
         yield [
             ['_id' => '12', 'greatKey' => 'value_not_to_be_converted', 'another' => [['nestedOne' => 1], ['nestedTwo' => 2]]],
@@ -33,7 +33,7 @@ class ArrayUtilsTest extends TestCase
         self::assertEquals($expected, ArrayUtils::toSnakeCaseKeys($input));
     }
 
-    public function provideDataToSnakeCaseKeys(): iterable
+    public static function provideDataToSnakeCaseKeys(): iterable
     {
         yield [
             ['_id' => '12', 'great_key' => 'valueNotToBeConverted', 'another' => [['nested_one' => 1], ['nested_two' => 2]]],

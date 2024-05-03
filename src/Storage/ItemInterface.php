@@ -30,7 +30,7 @@ interface ItemInterface
      *
      * @return mixed The value corresponding to this cache item's key, or null if not found.
      */
-    public function get();
+    public function get(): mixed;
 
     /**
      * Confirms if the cache item lookup resulted in a cache hit.
@@ -53,7 +53,7 @@ interface ItemInterface
      *
      * @return static The invoked object.
      */
-    public function set($value): self;
+    public function set(mixed $value): self;
 
     /**
      * Sets the expiration time for this cache item.
@@ -65,7 +65,7 @@ interface ItemInterface
      *
      * @return static The called object.
      */
-    public function expiresAt(?DateTimeInterface $expiration): self;
+    public function expiresAt(DateTimeInterface|null $expiration): self;
 
     /**
      * Sets the expiration time for this cache item.
@@ -78,5 +78,5 @@ interface ItemInterface
      *
      * @return static The called object.
      */
-    public function expiresAfter($time): self;
+    public function expiresAfter(int|DateInterval|null $time): self;
 }

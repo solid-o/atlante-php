@@ -11,10 +11,8 @@ class BadResponsePropertyTreeParserFactory
     /** @var BadResponsePropertyTreeParserInterface[] */
     private array $parsers;
 
-    /**
-     * @param BadResponsePropertyTreeParserInterface[]|null $parsers
-     */
-    public function __construct(?array $parsers = null)
+    /** @param BadResponsePropertyTreeParserInterface[]|null $parsers */
+    public function __construct(array|null $parsers = null)
     {
         $this->parsers = $parsers ?? [
             new KcsSerializerPropertyTreeParser(),
@@ -25,10 +23,8 @@ class BadResponsePropertyTreeParserFactory
     /**
      * Constructs and returns the first parser capable of parsing the given data.
      * Throws InvalidArgumentException if no parser is found.
-     *
-     * @param mixed $data
      */
-    public function factory($data): BadResponsePropertyTreeParserInterface
+    public function factory(mixed $data): BadResponsePropertyTreeParserInterface
     {
         foreach ($this->parsers as $parser) {
             if ($parser->supports($data)) {

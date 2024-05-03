@@ -10,13 +10,8 @@ interface BadResponsePropertyTreeParserInterface
 {
     /**
      * Whether the current parser supports the passed data.
-     *
-     * @param mixed $data
      */
-    public function supports($data): bool;
+    public function supports(mixed $data): bool;
 
-    /**
-     * @param mixed $data
-     */
-    public function parse($data): BadResponsePropertyTree;
+    public function parse(mixed $data): BadResponsePropertyTree;
 }

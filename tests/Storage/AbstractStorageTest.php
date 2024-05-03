@@ -86,7 +86,7 @@ class ConcreteStorage extends AbstractStorage
         return true;
     }
 
-    protected function doGetItem(string $key)
+    protected function doGetItem(string $key): mixed
     {
         if ($key === 'foo') {
             return serialize(42);

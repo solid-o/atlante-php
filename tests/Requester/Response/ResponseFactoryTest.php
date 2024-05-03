@@ -7,6 +7,7 @@ namespace Solido\Atlante\Tests\Requester\Response;
 use Generator;
 use Nyholm\Psr7\Response as PsrResponse;
 use PHPUnit\Framework\TestCase;
+use Prophecy\PhpUnit\ProphecyTrait;
 use Psr\Http\Message\ResponseInterface as PsrResponseInterface;
 use Solido\Atlante\Http\HeaderBag;
 use Solido\Atlante\Requester\Response\AccessDeniedResponse;
@@ -26,6 +27,8 @@ use function assert;
 
 class ResponseFactoryTest extends TestCase
 {
+    use ProphecyTrait;
+
     /**
      * @phpstan-param class-string $responseClassname
      * @phpstan-param array<string, string[]> $expectedHeaders
@@ -131,7 +134,7 @@ class ResponseFactoryTest extends TestCase
     public function testDecodeDataOverridable(): void
     {
         $factory = new class extends ResponseFactory {
-            protected static function decodeData(HeaderBag $headers, string $data)
+            protected static function decodeData(HeaderBag $headers, string $data): mixed
             {
                 return (object) ['test'];
             }

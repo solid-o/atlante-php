@@ -28,9 +28,9 @@ final class MockRequester implements RequesterInterface
     /**
      * Returns a scheduled Response from a FIFO queue.
      *
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
-    public function request(string $method, string $uri, array $headers, $requestData = null, ?callable $filter = null): ResponseInterface
+    public function request(string $method, string $uri, array $headers, mixed $requestData = null, callable|null $filter = null): ResponseInterface
     {
         $response = array_shift($this->responses);
         if ($response === null) {

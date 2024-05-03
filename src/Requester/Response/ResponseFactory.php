@@ -9,11 +9,11 @@ use Solido\Atlante\Http\HeaderBag;
 use TypeError;
 
 use function get_debug_type;
-use function Safe\sprintf;
+use function sprintf;
 
 class ResponseFactory extends AbstractResponseFactory
 {
-    public function fromResponse(object $response, ?callable $filter = null): ResponseInterface
+    public function fromResponse(object $response, callable|null $filter = null): ResponseInterface
     {
         if (! $response instanceof PsrResponseInterface) {
             throw new TypeError(sprintf('Argument 1 passed to %s must be an instance of %s, %s passed.', __METHOD__, PsrResponseInterface::class, get_debug_type($response)));
@@ -23,7 +23,7 @@ class ResponseFactory extends AbstractResponseFactory
             $response = $this->makeResponse(
                 $response->getStatusCode(),
                 new HeaderBag($response->getHeaders()),
-                (string) $response->getBody()
+                (string) $response->getBody(),
             );
 
             if ($filter !== null) {

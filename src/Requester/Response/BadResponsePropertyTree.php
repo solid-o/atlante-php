@@ -6,23 +6,12 @@ namespace Solido\Atlante\Requester\Response;
 
 final class BadResponsePropertyTree
 {
-    private string $name;
-
-    /** @var string[] */
-    private array $errors;
-
-    /** @var static[] */
-    private array $children;
-
     /**
      * @param string[] $errors
      * @param self[] $children
      */
-    public function __construct(string $name, array $errors, array $children)
+    public function __construct(private string $name, private array $errors, private array $children)
     {
-        $this->name = $name;
-        $this->errors = $errors;
-        $this->children = $children;
     }
 
     public function getName(): string

@@ -15,7 +15,7 @@ use Solido\Atlante\Requester\SymfonyHttpClientRequester;
 use Symfony\Component\HttpClient\Response\MockResponse;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 
-use function Safe\fopen;
+use function fopen;
 
 class SymfonyHttpClientRequesterTest extends TestCase
 {

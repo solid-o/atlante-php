@@ -8,16 +8,13 @@ use RuntimeException;
 use Solido\Atlante\Requester\Response\ResponseInterface;
 use Throwable;
 
-use function Safe\sprintf;
+use function sprintf;
 
 abstract class AbstractException extends RuntimeException
 {
-    protected ResponseInterface $response;
-
-    public function __construct(ResponseInterface $response, ?string $message = null, ?Throwable $previous = null)
+    public function __construct(protected ResponseInterface $response, string|null $message = null, Throwable|null $previous = null)
     {
         parent::__construct($message ?? sprintf('Unsuccessful response received. Status code = %u.', $response->getStatusCode()), 0, $previous);
-        $this->response = $response;
     }
 
     public function getStatusCode(): int

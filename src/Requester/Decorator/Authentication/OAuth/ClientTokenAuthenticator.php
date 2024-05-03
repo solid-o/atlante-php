@@ -14,17 +14,18 @@ use Solido\Atlante\Storage\StorageInterface;
 use function assert;
 use function http_build_query;
 use function is_object;
-use function Safe\json_encode;
-use function Safe\sprintf;
+use function json_encode;
+use function sprintf;
+
+use const JSON_THROW_ON_ERROR;
 
 class ClientTokenAuthenticator implements DecoratorInterface
 {
-    private RequesterInterface $requester;
     private StorageInterface $tokenStorage;
 
     private string $tokenEndpoint;
     private string $clientId;
-    private ?string $clientSecret;
+    private string|null $clientSecret;
     private string $clientTokenKey;
 
     /** @phpstan-var 'json'|'form' */
@@ -34,9 +35,8 @@ class ClientTokenAuthenticator implements DecoratorInterface
      * @param array<string, mixed> $options
      * @phpstan-param array{token_endpoint: string, client_id: string, client_secret?: string|null, client_token_key?: string, data_encoding: 'json'|'form'} $options
      */
-    public function __construct(RequesterInterface $requester, StorageInterface $storage, array $options)
+    public function __construct(private RequesterInterface $requester, StorageInterface $storage, array $options)
     {
-        $this->requester = $requester;
         $this->tokenStorage = $storage;
 
         $this->tokenEndpoint = $options['token_endpoint'];
@@ -106,11 +106,11 @@ class ClientTokenAuthenticator implements DecoratorInterface
      * @param array<string, string>|null $body
      * @param array<string, string|string[]> $headers
      */
-    private function request(?array $body, array $headers): ResponseInterface
+    private function request(array|null $body, array $headers): ResponseInterface
     {
         if ($this->dataEncoding === 'json') {
             $headers['Content-Type'] = 'application/json';
-            $data = json_encode($body);
+            $data = json_encode($body, JSON_THROW_ON_ERROR);
         } else {
             $headers['Content-Type'] = 'application/x-www-form-urlencoded';
             $data = http_build_query($body ?? []);

@@ -6,22 +6,19 @@ namespace Solido\Atlante\Requester\Decorator;
 
 use Solido\Atlante\Requester\Request;
 
+use function array_replace_recursive;
 use function assert;
 use function http_build_query;
 use function parse_str;
-use function Safe\array_replace_recursive;
-use function Safe\parse_url;
-use function Safe\substr;
+use function parse_url;
 use function strrpos;
 use function strtr;
+use function substr;
 
 class UrlDecorator implements DecoratorInterface
 {
-    private string $baseUrl;
-
-    public function __construct(string $baseUrl)
+    public function __construct(private string $baseUrl)
     {
-        $this->baseUrl = $baseUrl;
     }
 
     public function decorate(Request $request): Request

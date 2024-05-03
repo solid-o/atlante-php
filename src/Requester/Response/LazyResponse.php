@@ -12,18 +12,13 @@ class LazyResponse implements ResponseInterface
     private $responseBuilder;
     private ResponseInterface $response;
 
-    /**
-     * @param callable(): ResponseInterface $responseBuilder
-     */
+    /** @param callable(): ResponseInterface $responseBuilder */
     public function __construct(callable $responseBuilder)
     {
         $this->responseBuilder = $responseBuilder;
     }
 
-    /**
-     * @inheritDoc
-     */
-    public function getData()
+    public function getData(): mixed
     {
         return $this->getResponse()->getData();
     }

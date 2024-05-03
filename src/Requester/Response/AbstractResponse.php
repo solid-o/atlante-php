@@ -8,25 +8,11 @@ use Solido\Atlante\Http\HeaderBag;
 
 abstract class AbstractResponse implements ResponseInterface
 {
-    /** @var mixed[]|object|string */
-    protected $data;
-    protected HeaderBag $headers;
-    protected int $statusCode;
-
-    /**
-     * @param mixed[]|object|string $data
-     */
-    public function __construct(int $statusCode, HeaderBag $headers, $data)
+    public function __construct(protected int $statusCode, protected HeaderBag $headers, protected mixed $data)
     {
-        $this->statusCode = $statusCode;
-        $this->headers = $headers;
-        $this->data = $data;
     }
 
-    /**
-     * @return mixed[]|object|string
-     */
-    public function getData()
+    public function getData(): mixed
     {
         return $this->data;
     }

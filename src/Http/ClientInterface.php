@@ -17,21 +17,21 @@ interface ClientInterface
      * @param string[]|string[][]|null                                       $headers
      * @phpstan-param array<array-key, mixed>|string|resource|Closure(): string|Traversable<string>|null $requestData
      */
-    public function request(string $method, string $path, $requestData = null, ?array $headers = null, bool $throw = true): ResponseInterface;
+    public function request(string $method, string $path, $requestData = null, array|null $headers = null, bool $throw = true): ResponseInterface;
 
     /**
      * Performs a request to the API service using a DELETE method.
      *
      * @param string[]|string[][]|null $headers
      */
-    public function delete(string $path, ?array $headers = null, bool $throw = true): ResponseInterface;
+    public function delete(string $path, array|null $headers = null, bool $throw = true): ResponseInterface;
 
     /**
      * Performs a request to the API service using a GET method.
      *
      * @param string[]|string[][]|null $headers
      */
-    public function get(string $path, ?array $headers = null, bool $throw = true): ResponseInterface;
+    public function get(string $path, array|null $headers = null, bool $throw = true): ResponseInterface;
 
     /**
      * Performs a request to the API service using a POST method.
@@ -40,7 +40,7 @@ interface ClientInterface
      * @param string[]|string[][]|null                                       $headers
      * @phpstan-param array<array-key, mixed>|string|resource|Closure(): string|Traversable<string>|null $requestData
      */
-    public function post(string $path, $requestData = null, ?array $headers = null, bool $throw = true): ResponseInterface;
+    public function post(string $path, $requestData = null, array|null $headers = null, bool $throw = true): ResponseInterface;
 
     /**
      * Performs a request to the API service using a PUT method.
@@ -49,7 +49,7 @@ interface ClientInterface
      * @param string[]|string[][]|null                                       $headers
      * @phpstan-param array<array-key, mixed>|string|resource|Closure(): string|Traversable<string>|null $requestData
      */
-    public function put(string $path, $requestData = null, ?array $headers = null, bool $throw = true): ResponseInterface;
+    public function put(string $path, $requestData = null, array|null $headers = null, bool $throw = true): ResponseInterface;
 
     /**
      * Performs a request to the API service using a PATCH method.
@@ -58,5 +58,5 @@ interface ClientInterface
      * @param string[]|string[][]|null                                       $headers
      * @phpstan-param array<array-key, mixed>|string|resource|Closure(): string|Traversable<string>|null $requestData
      */
-    public function patch(string $path, $requestData = null, ?array $headers = null, bool $throw = true): ResponseInterface;
+    public function patch(string $path, $requestData = null, array|null $headers = null, bool $throw = true): ResponseInterface;
 }

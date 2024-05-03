@@ -10,10 +10,8 @@ interface ResponseInterface
 {
     /**
      * Returns the API response content.
-     *
-     * @return object|string
      */
-    public function getData();
+    public function getData(): mixed;
 
     /**
      * Gets the HTTP headers received in the response.

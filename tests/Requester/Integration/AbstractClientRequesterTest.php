@@ -11,7 +11,7 @@ use Solido\Atlante\Requester\RequesterInterface;
 use Solido\Atlante\Tests\Fixtures\TestHttpServer;
 use Symfony\Component\Process\Process;
 
-use function Safe\fopen;
+use function fopen;
 
 /**
  * @group integration

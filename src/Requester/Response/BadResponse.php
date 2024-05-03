@@ -13,10 +13,7 @@ class BadResponse extends InvalidResponse
 {
     private const HTTP_STATUS = 400;
 
-    /**
-     * @param mixed[]|object|string $data
-     */
-    public function __construct(HeaderBag $headers, $data, ?BadResponsePropertyTreeParserFactory $parserFactory = null)
+    public function __construct(HeaderBag $headers, mixed $data, BadResponsePropertyTreeParserFactory|null $parserFactory = null)
     {
         $data = ($parserFactory ?? new BadResponsePropertyTreeParserFactory())->factory($data)->parse($data);
 

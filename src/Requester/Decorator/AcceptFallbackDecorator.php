@@ -11,7 +11,7 @@ class AcceptFallbackDecorator implements DecoratorInterface
 {
     private string $accept;
 
-    public function __construct(?string $accept = null)
+    public function __construct(string|null $accept = null)
     {
         $this->accept = $accept ?? 'application/json';
     }

@@ -18,7 +18,7 @@ use Solido\Atlante\Requester\PsrClientRequester;
 use Solido\Atlante\Requester\Response\Response as SolidoResponse;
 use Solido\Atlante\Requester\Response\ResponseFactoryInterface;
 
-use function Safe\fopen;
+use function fopen;
 
 class PsrClientRequesterTest extends TestCase
 {

@@ -9,11 +9,8 @@ use Solido\Atlante\Requester\Request;
 
 class VersionSetterDecorator implements DecoratorInterface
 {
-    private string $version;
-
-    public function __construct(string $version)
+    public function __construct(private string $version)
     {
-        $this->version = $version;
     }
 
     public function decorate(Request $request): Request

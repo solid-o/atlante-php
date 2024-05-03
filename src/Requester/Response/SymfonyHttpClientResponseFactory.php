@@ -9,11 +9,11 @@ use Symfony\Contracts\HttpClient\ResponseInterface as SymfonyResponseInterface;
 use TypeError;
 
 use function get_debug_type;
-use function Safe\sprintf;
+use function sprintf;
 
 class SymfonyHttpClientResponseFactory extends AbstractResponseFactory
 {
-    public function fromResponse(object $response, ?callable $filter = null): ResponseInterface
+    public function fromResponse(object $response, callable|null $filter = null): ResponseInterface
     {
         if (! $response instanceof SymfonyResponseInterface) {
             throw new TypeError(sprintf('Argument 1 passed to %s must be an instance of %s, %s passed.', __METHOD__, SymfonyResponseInterface::class, get_debug_type($response)));
@@ -23,7 +23,7 @@ class SymfonyHttpClientResponseFactory extends AbstractResponseFactory
             $response = $this->makeResponse(
                 $response->getStatusCode(),
                 new HeaderBag($response->getHeaders(false)),
-                $response->getContent(false)
+                $response->getContent(false),
             );
 
             if ($filter !== null) {

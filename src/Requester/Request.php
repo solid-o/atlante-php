@@ -10,37 +10,30 @@ use Solido\Atlante\Http\HeaderBag;
 use Traversable;
 
 use function method_exists;
-use function Safe\sprintf;
+use function sprintf;
 
 /**
  * @property-read array|string|resource|Traversable|Closure $body
- * @property-read string                                    $url
- * @property-read string                                    $method
- * @property-read string[]|string[][]                       $headers
+ * @property-read string $url
+ * @property-read string $method
+ * @property-read string[]|string[][] $headers
  */
 class Request
 {
-    /**
-     * @var array<array-key, mixed>|string|resource|Closure|iterable<string>|null
-     * @phpstan-var array<array-key, mixed>|string|resource|Closure(): string|iterable<string>|null
-     */
-    private $body;
-
-    private HeaderBag $headers;
-    private string $method;
-    private string $url;
+    private readonly HeaderBag $headers;
 
     /**
      * @param array<array-key, mixed>|string|resource|Closure|iterable<string>|null $body
-     * @param string[]|string[][]|null                                       $headers
+     * @param array<string, string|array<string|null>|null> $headers
      * @phpstan-param array<array-key, mixed>|string|resource|Closure(): string|iterable<string>|null $body
      */
-    public function __construct(string $method, string $url, ?array $headers = null, $body = null)
-    {
-        $this->method = $method;
-        $this->url = $url;
+    public function __construct(
+        private readonly string $method,
+        private readonly string $url,
+        array|null $headers = null,
+        private readonly mixed $body = null,
+    ) {
         $this->headers = new HeaderBag($headers ?? []);
-        $this->body = $body;
     }
 
     /**
@@ -52,11 +45,10 @@ class Request
         return $this->body;
     }
 
-    /**
-     * @return string[]|string[][]
-     */
+    /** @return array<string, string|array<string|null>|null> */
     public function getHeaders(): array
     {
+        /** @phpstan-ignore-next-line */
         return $this->headers->all();
     }
 
@@ -70,10 +62,7 @@ class Request
         return $this->url;
     }
 
-    /**
-     * @return mixed
-     */
-    public function __get(string $name)
+    public function __get(string $name): mixed
     {
         $method = sprintf('get%s', $name);
         if (method_exists($this, $method)) {

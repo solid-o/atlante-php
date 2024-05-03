@@ -8,12 +8,12 @@ use function addcslashes;
 use function array_slice;
 use function count;
 use function implode;
+use function preg_match;
+use function preg_match_all;
 use function preg_quote;
-use function Safe\preg_match;
-use function Safe\preg_match_all;
-use function Safe\preg_replace;
-use function Safe\substr;
+use function preg_replace;
 use function strtolower;
+use function substr;
 
 use const PREG_SET_ORDER;
 
@@ -148,6 +148,7 @@ class HeaderUtils
      */
     public static function unquote(string $s): string
     {
+        /** @phpstan-ignore-next-line */
         return preg_replace('/\\\\(.)|"/', '$1', $s);
     }
 

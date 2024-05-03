@@ -173,7 +173,7 @@ class ClientTest extends TestCase
         $this->client->request($method, '/', 'test', [], false)->getStatusCode();
     }
 
-    public function provideNoBodyMethods(): iterable
+    public static function provideNoBodyMethods(): iterable
     {
         yield ['GET'];
         yield ['HEAD'];
@@ -258,7 +258,7 @@ class ClientTest extends TestCase
         }
     }
 
-    public function provideInvalidResponses(): iterable
+    public static function provideInvalidResponses(): iterable
     {
         yield [
             BadRequestException::class,
@@ -302,7 +302,7 @@ class ClientTest extends TestCase
         $this->client->post('/', $iterable, []);
     }
 
-    public function provideIterableBody(): iterable
+    public static function provideIterableBody(): iterable
     {
         yield [['test' => 'great']];
         yield [new ArrayObject(['test' => 'great'])];

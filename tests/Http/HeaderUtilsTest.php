@@ -17,7 +17,7 @@ class HeaderUtilsTest extends TestCase
         self::assertSame($expected, HeaderUtils::split($header, $separator));
     }
 
-    public function provideHeaderToSplit(): array
+    public static function provideHeaderToSplit(): array
     {
         return [
             [['foo=123', 'bar'], 'foo=123,bar', ','],

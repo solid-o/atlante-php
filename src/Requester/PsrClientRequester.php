@@ -12,35 +12,34 @@ use Solido\Atlante\Requester\Response\ResponseFactory;
 use Solido\Atlante\Requester\Response\ResponseFactoryInterface;
 use Solido\Atlante\Requester\Response\ResponseInterface;
 
+use function array_filter;
 use function get_debug_type;
 use function is_callable;
 use function is_resource;
 use function is_string;
-use function Safe\sprintf;
+use function sprintf;
 
 class PsrClientRequester implements RequesterInterface
 {
-    private ClientInterface $client;
-    private RequestFactoryInterface $requestFactory;
-    private StreamFactoryInterface $streamFactory;
     private ResponseFactoryInterface $responseFactory;
 
-    public function __construct(ClientInterface $client, RequestFactoryInterface $requestFactory, StreamFactoryInterface $streamFactory, ?ResponseFactoryInterface $responseFactory = null)
+    public function __construct(private ClientInterface $client, private RequestFactoryInterface $requestFactory, private StreamFactoryInterface $streamFactory, ResponseFactoryInterface|null $responseFactory = null)
     {
-        $this->client = $client;
-        $this->requestFactory = $requestFactory;
-        $this->streamFactory = $streamFactory;
         $this->responseFactory = $responseFactory ?? new ResponseFactory();
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
-    public function request(string $method, string $uri, array $headers, $requestData = null, ?callable $filter = null): ResponseInterface
+    public function request(string $method, string $uri, array $headers, mixed $requestData = null, callable|null $filter = null): ResponseInterface
     {
         $request = $this->requestFactory->createRequest($method, $uri);
         foreach ($headers as $key => $value) {
-            $request = $request->withHeader($key, $value);
+            if ($value === null) {
+                continue;
+            }
+
+            $request = $request->withHeader($key, array_filter((array) $value, static fn ($value) => $value !== null));
         }
 
         if ($requestData !== null) {

@@ -6,11 +6,10 @@ namespace Solido\Atlante\Http;
 
 use ArrayIterator;
 use Countable;
+use DateTime;
 use DateTimeInterface;
 use IteratorAggregate;
 use RuntimeException;
-use Safe\DateTime;
-use Safe\Exceptions\DatetimeException;
 
 use function array_key_exists;
 use function array_keys;
@@ -23,9 +22,9 @@ use function implode;
 use function in_array;
 use function is_array;
 use function is_string;
+use function ksort;
 use function max;
-use function Safe\ksort;
-use function Safe\sprintf;
+use function sprintf;
 use function strtr;
 use function ucwords;
 
@@ -41,15 +40,13 @@ class HeaderBag implements IteratorAggregate, Countable
     protected const UPPER = '_ABCDEFGHIJKLMNOPQRSTUVWXYZ';
     protected const LOWER = '-abcdefghijklmnopqrstuvwxyz';
 
-    /** @var array<string, string[]> */
+    /** @var array<string, array<string|null>> */
     protected array $headers = [];
 
     /** @var array<string, mixed> */
     protected array $cacheControl = [];
 
-    /**
-     * @param array<string, string|string[]> $headers
-     */
+    /** @param array<string, string|array<string|null>|null> $headers */
     public function __construct(array $headers = [])
     {
         foreach ($headers as $key => $values) {
@@ -73,6 +70,8 @@ class HeaderBag implements IteratorAggregate, Countable
         $max = max(array_map('strlen', array_keys($headers))) + 1;
         $content = '';
         foreach ($headers as $name => $values) {
+            assert(is_array($values));
+
             $name = ucwords($name, '-');
             foreach ($values as $value) {
                 $content .= sprintf('%-' . $max . "s %s\r\n", $name . ':', $value);
@@ -87,9 +86,9 @@ class HeaderBag implements IteratorAggregate, Countable
      *
      * @param string|null $key The name of the headers to return or null to get them all
      *
-     * @return array<string, string[]>|string[] An array of headers
+     * @return array<string, string|array<string|null>|null>|array<string|null> An array of headers
      */
-    public function all(?string $key = null): array
+    public function all(string|null $key = null): array
     {
         if ($key !== null) {
             return $this->headers[strtr($key, self::UPPER, self::LOWER)] ?? [];
@@ -111,7 +110,7 @@ class HeaderBag implements IteratorAggregate, Countable
     /**
      * Replaces the current HTTP headers by a new set.
      *
-     * @param array<string, string|string[]> $headers
+     * @param array<string, string|array<string|null>|null> $headers
      */
     public function replace(array $headers = []): void
     {
@@ -122,7 +121,7 @@ class HeaderBag implements IteratorAggregate, Countable
     /**
      * Adds new headers the current HTTP headers set.
      *
-     * @param array<string, string|string[]> $headers
+     * @param array<string, string|array<string|null>|null> $headers
      */
     public function add(array $headers): void
     {
@@ -136,7 +135,7 @@ class HeaderBag implements IteratorAggregate, Countable
      *
      * @return string|null The first header value or default value
      */
-    public function get(string $key, ?string $default = null): ?string
+    public function get(string $key, string|null $default = null): string|null
     {
         $headers = $this->all($key);
 
@@ -156,10 +155,10 @@ class HeaderBag implements IteratorAggregate, Countable
     /**
      * Sets a header by name.
      *
-     * @param string|string[] $values  The value or an array of values
-     * @param bool            $replace Whether to replace the actual value or not (true by default)
+     * @param string|array<string|null>|null $values  The value or an array of values
+     * @param bool $replace Whether to replace the actual value or not (true by default)
      */
-    public function set(string $key, $values, bool $replace = true): void
+    public function set(string $key, string|array|null $values, bool $replace = true): void
     {
         $key = strtr($key, self::UPPER, self::LOWER);
         $replace = $replace === true || ! isset($this->headers[$key]);
@@ -172,10 +171,14 @@ class HeaderBag implements IteratorAggregate, Countable
             } else {
                 array_push($this->headers[$key], ...$values);
             }
-        } elseif ($replace) {
-            $this->headers[$key] = [$values];
         } else {
-            $this->headers[$key][] = $values;
+            assert($values === null || is_string($values));
+
+            if ($replace) {
+                $this->headers[$key] = [$values];
+            } else {
+                $this->headers[$key][] = $values;
+            }
         }
 
         if ($key !== 'cache-control') {
@@ -202,7 +205,7 @@ class HeaderBag implements IteratorAggregate, Countable
      */
     public function contains(string $key, string $value): bool
     {
-        return in_array($value, $this->all($key));
+        return in_array($value, $this->all($key), true);
     }
 
     /**
@@ -228,18 +231,19 @@ class HeaderBag implements IteratorAggregate, Countable
      *
      * @throws RuntimeException When the HTTP header is not parseable.
      */
-    public function getDate(string $key, ?DateTime $default = null): ?DateTimeInterface
+    public function getDate(string $key, DateTime|null $default = null): DateTimeInterface|null
     {
         $value = $this->get($key);
         if ($value === null) {
             return $default;
         }
 
-        try {
-            return DateTime::createFromFormat(DATE_RFC2822, $value);
-        } catch (DatetimeException $e) {
-            throw new RuntimeException(sprintf('The "%s" HTTP header is not parseable (%s).', $key, $value), 0, $e);
+        $datetime = DateTime::createFromFormat(DATE_RFC2822, $value);
+        if ($datetime === false) {
+            throw new RuntimeException(sprintf('The "%s" HTTP header is not parseable (%s).', $key, $value));
         }
+
+        return $datetime;
     }
 
     /**
@@ -247,7 +251,7 @@ class HeaderBag implements IteratorAggregate, Countable
      *
      * @param mixed $value The Cache-Control directive value
      */
-    public function addCacheControlDirective(string $key, $value = true): void
+    public function addCacheControlDirective(string $key, mixed $value = true): void
     {
         $this->cacheControl[$key] = $value;
 
@@ -269,7 +273,7 @@ class HeaderBag implements IteratorAggregate, Countable
      *
      * @return mixed|null The directive value if defined, null otherwise
      */
-    public function getCacheControlDirective(string $key)
+    public function getCacheControlDirective(string $key): mixed
     {
         return array_key_exists($key, $this->cacheControl) ? $this->cacheControl[$key] : null;
     }
@@ -288,7 +292,7 @@ class HeaderBag implements IteratorAggregate, Countable
      * Returns an iterator for headers.
      *
      * @return ArrayIterator An \ArrayIterator instance
-     * @phpstan-return ArrayIterator<string, string[]>
+     * @phpstan-return ArrayIterator<string, array<string|null>>
      */
     public function getIterator(): ArrayIterator
     {

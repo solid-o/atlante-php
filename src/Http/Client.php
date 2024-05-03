@@ -30,57 +30,52 @@ use function is_callable;
 use function is_iterable;
 use function is_resource;
 use function is_string;
-use function Safe\sprintf;
+use function sprintf;
 use function stream_get_meta_data;
 
 class Client implements ClientInterface
 {
-    protected RequesterInterface $requester;
-
     /** @var iterable<DecoratorInterface> */
     protected iterable $decorators;
 
-    /**
-     * @param iterable<DecoratorInterface>|null $requestDecorators Ordered list of Decorators
-     */
-    public function __construct(RequesterInterface $requester, ?iterable $requestDecorators = null)
+    /** @param iterable<DecoratorInterface>|null $requestDecorators Ordered list of Decorators */
+    public function __construct(protected RequesterInterface $requester, iterable|null $requestDecorators = null)
     {
-        $this->requester = $requester;
         $this->decorators = $requestDecorators ?? [];
     }
 
-    /** {@inheritdoc} */
-    public function delete(string $path, ?array $headers = null, bool $throw = true): ResponseInterface
+    /** {@inheritDoc} */
+    public function delete(string $path, array|null $headers = null, bool $throw = true): ResponseInterface
     {
         return $this->request('DELETE', $path, null, $headers, $throw);
     }
 
-    /** {@inheritdoc} */
-    public function get(string $path, ?array $headers = null, bool $throw = true): ResponseInterface
+    /** {@inheritDoc} */
+    public function get(string $path, array|null $headers = null, bool $throw = true): ResponseInterface
     {
         return $this->request('GET', $path, null, $headers, $throw);
     }
 
-    /** {@inheritdoc} */
-    public function post(string $path, $requestData = null, ?array $headers = null, bool $throw = true): ResponseInterface
+    /** {@inheritDoc} */
+    public function post(string $path, $requestData = null, array|null $headers = null, bool $throw = true): ResponseInterface
     {
         return $this->request('POST', $path, $requestData, $headers, $throw);
     }
 
-    /** {@inheritdoc} */
-    public function put(string $path, $requestData = null, ?array $headers = null, bool $throw = true): ResponseInterface
+    /** {@inheritDoc} */
+    public function put(string $path, $requestData = null, array|null $headers = null, bool $throw = true): ResponseInterface
     {
         return $this->request('PUT', $path, $requestData, $headers, $throw);
     }
 
-    /** {@inheritdoc} */
-    public function patch(string $path, $requestData = null, ?array $headers = null, bool $throw = true): ResponseInterface
+    /** {@inheritDoc} */
+    public function patch(string $path, $requestData = null, array|null $headers = null, bool $throw = true): ResponseInterface
     {
         return $this->request('PATCH', $path, $requestData, $headers, $throw);
     }
 
-    /** {@inheritdoc} */
-    public function request(string $method, string $path, $requestData = null, ?array $headers = null, bool $throw = true): ResponseInterface
+    /** {@inheritDoc} */
+    public function request(string $method, string $path, $requestData = null, array|null $headers = null, bool $throw = true): ResponseInterface
     {
         if (in_array($method, ['GET', 'HEAD', 'DELETE'])) {
             $requestData = null;
