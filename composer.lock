@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "006859594e6db547e2ca0bc83b493f5f",
+    "content-hash": "7bfbddb7f09a04eb955438e648481e47",
     "packages": [],
     "packages-dev": [
         {
@@ -609,32 +609,35 @@
         },
         {
             "name": "jangregor/phpstan-prophecy",
-            "version": "1.0.2",
+            "version": "2.3.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/Jan0707/phpstan-prophecy.git",
-                "reference": "5ee56c7db1d58f0578c82a35e3c1befe840e85a9"
+                "reference": "42b6e62dc0fa5724a667cb9a10c7245580f22033"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Jan0707/phpstan-prophecy/zipball/5ee56c7db1d58f0578c82a35e3c1befe840e85a9",
-                "reference": "5ee56c7db1d58f0578c82a35e3c1befe840e85a9",
+                "url": "https://api.github.com/repos/Jan0707/phpstan-prophecy/zipball/42b6e62dc0fa5724a667cb9a10c7245580f22033",
+                "reference": "42b6e62dc0fa5724a667cb9a10c7245580f22033",
                 "shasum": ""
             },
             "require": {
-                "php": "^7.1 || ^8.0",
-                "phpstan/phpstan": "^1.0.0"
+                "php": "^7.4 || ^8.0",
+                "phpstan/phpstan": "^2.1.5"
             },
             "conflict": {
-                "phpspec/prophecy": "<1.7.0 || >=2.0.0",
-                "phpunit/phpunit": "<6.0.0 || >=12.0.0"
+                "phpspec/prophecy": "<1.17.0 || >=2.0.0",
+                "phpspec/prophecy-phpunit": "<2.3.0 || >=3.0.0",
+                "phpunit/phpunit": "<9.1.0 || >=14.0.0"
             },
             "require-dev": {
-                "ergebnis/composer-normalize": "^2.1.1",
-                "ergebnis/license": "^1.0.0",
-                "ergebnis/php-cs-fixer-config": "~2.2.0",
+                "ergebnis/composer-normalize": "^2.50.0",
+                "ergebnis/license": "^2.7.0",
+                "ergebnis/php-cs-fixer-config": "^6.59.0",
+                "php-cs-fixer/shim": "^3.93.0",
                 "phpspec/prophecy": "^1.7.0",
-                "phpunit/phpunit": "^6.0.0 || ^7.0.0 || ^8.0.0 || ^9.0.0"
+                "phpspec/prophecy-phpunit": "^2.3",
+                "phpunit/phpunit": "^9.1.0"
             },
             "type": "phpstan-extension",
             "extra": {
@@ -662,9 +665,9 @@
             "description": "Provides a phpstan/phpstan extension for phpspec/prophecy",
             "support": {
                 "issues": "https://github.com/Jan0707/phpstan-prophecy/issues",
-                "source": "https://github.com/Jan0707/phpstan-prophecy/tree/1.0.2"
+                "source": "https://github.com/Jan0707/phpstan-prophecy/tree/2.3.0"
             },
-            "time": "2024-04-03T08:15:54+00:00"
+            "time": "2026-02-10T08:07:43+00:00"
         },
         {
             "name": "kcs/class-finder",
@@ -732,25 +735,28 @@
         },
         {
             "name": "kcs/phpstan-strict-rules",
-            "version": "v1.0.0",
+            "version": "v2.1.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/alekitto/phpstan-strict-rules.git",
-                "reference": "2ba8fa8b328c45f3b149c05def5bf96793c594b6"
+                "reference": "b50b5b0674e2ce1ce9e1275683b7b758e2c511aa"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/alekitto/phpstan-strict-rules/zipball/2ba8fa8b328c45f3b149c05def5bf96793c594b6",
-                "reference": "2ba8fa8b328c45f3b149c05def5bf96793c594b6",
+                "url": "https://api.github.com/repos/alekitto/phpstan-strict-rules/zipball/b50b5b0674e2ce1ce9e1275683b7b758e2c511aa",
+                "reference": "b50b5b0674e2ce1ce9e1275683b7b758e2c511aa",
                 "shasum": ""
             },
             "require": {
-                "php": "^7.1|^8.0",
-                "phpstan/phpstan": "^1.0"
+                "php": "^7.4 || ^8.0",
+                "phpstan/phpstan": "^2.0"
+            },
+            "provide": {
+                "thecodingmachine/phpstan-strict-rules": "2.0"
             },
             "require-dev": {
                 "php-coveralls/php-coveralls": "^2.1",
-                "phpunit/phpunit": "^7.1"
+                "phpunit/phpunit": "^9.5"
             },
             "type": "phpstan-extension",
             "extra": {
@@ -760,7 +766,7 @@
                     ]
                 },
                 "branch-alias": {
-                    "dev-master": "1.0-dev"
+                    "dev-master": "2.0-dev"
                 }
             },
             "autoload": {
@@ -776,13 +782,17 @@
                 {
                     "name": "David Négrier",
                     "email": "d.negrier@thecodingmachine.com"
+                },
+                {
+                    "name": "Alessandro Chitolina",
+                    "email": "alekitto@gmail.com"
                 }
             ],
             "description": "A set of additional rules for PHPStan based on best practices followed at TheCodingMachine",
             "support": {
-                "source": "https://github.com/alekitto/phpstan-strict-rules/tree/v1.0.0"
+                "source": "https://github.com/alekitto/phpstan-strict-rules/tree/v2.1.0"
             },
-            "time": "2021-11-08T09:10:49+00:00"
+            "time": "2025-09-28T09:26:55+00:00"
         },
         {
             "name": "laminas/laminas-diactoros",
@@ -1585,15 +1595,15 @@
         },
         {
             "name": "phpstan/phpstan",
-            "version": "1.12.33",
+            "version": "2.2.2",
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/phpstan/phpstan/zipball/37982d6fc7cbb746dda7773530cda557cdf119e1",
-                "reference": "37982d6fc7cbb746dda7773530cda557cdf119e1",
+                "url": "https://api.github.com/repos/phpstan/phpstan/zipball/e5cc34d491a90e79c216d824f60fe21fd4d93bd6",
+                "reference": "e5cc34d491a90e79c216d824f60fe21fd4d93bd6",
                 "shasum": ""
             },
             "require": {
-                "php": "^7.2|^8.0"
+                "php": "^7.4|^8.0"
             },
             "conflict": {
                 "phpstan/phpstan-shim": "*"
@@ -1611,6 +1621,17 @@
             "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Ondřej Mirtes"
+                },
+                {
+                    "name": "Markus Staab"
+                },
+                {
+                    "name": "Vincent Langlet"
+                }
             ],
             "description": "PHPStan - PHP Static Analysis Tool",
             "keywords": [
@@ -1634,7 +1655,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2026-02-28T20:30:03+00:00"
+            "time": "2026-06-05T09:00:01+00:00"
         },
         {
             "name": "phpunit/php-code-coverage",
@@ -4601,24 +4622,24 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/solid-o/php-coding-standards.git",
-                "reference": "d1261766bcd217ad37cd36b197c96303da852226"
+                "reference": "b122f370fc5d5f34f18d12b172318610e5a74ec1"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/solid-o/php-coding-standards/zipball/d1261766bcd217ad37cd36b197c96303da852226",
-                "reference": "d1261766bcd217ad37cd36b197c96303da852226",
+                "url": "https://api.github.com/repos/solid-o/php-coding-standards/zipball/b122f370fc5d5f34f18d12b172318610e5a74ec1",
+                "reference": "b122f370fc5d5f34f18d12b172318610e5a74ec1",
                 "shasum": ""
             },
             "require": {
-                "dealerdirect/phpcodesniffer-composer-installer": "*",
-                "doctrine/coding-standard": ">=11.0",
+                "dealerdirect/phpcodesniffer-composer-installer": "^1.2",
+                "doctrine/coding-standard": "^14.0 || ^15.0",
                 "kcs/phpstan-strict-rules": "^0.12.0 || ^1.0 || ^2.0",
-                "php": "^8.1",
+                "php": "^8.4",
                 "phpstan/extension-installer": "^1.1",
                 "phpstan/phpstan": "^1.12 || ^2.0",
                 "roave/security-advisories": "dev-latest || dev-master",
                 "slevomat/coding-standard": "^7.0 || ^8.0",
-                "solido/phpstan-rules": "^0.4",
+                "solido/phpstan-rules": "^0.4 || ^0.5",
                 "squizlabs/php_codesniffer": "^3.6 || ^4.0",
                 "thecodingmachine/safe": "^1.1 || ^2.0 || ^3.0"
             },
@@ -4643,7 +4664,7 @@
                 "issues": "https://github.com/solid-o/php-coding-standards/issues",
                 "source": "https://github.com/solid-o/php-coding-standards/tree/master"
             },
-            "time": "2025-04-21T23:02:08+00:00"
+            "time": "2026-06-17T00:42:26+00:00"
         },
         {
             "name": "solido/phpstan-rules",

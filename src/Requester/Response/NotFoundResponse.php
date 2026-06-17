@@ -8,7 +8,7 @@ use Solido\Atlante\Http\HeaderBag;
 
 class NotFoundResponse extends InvalidResponse
 {
-    private const HTTP_STATUS = 404;
+    private const int HTTP_STATUS = 404;
 
     public function __construct(HeaderBag $headers, mixed $data)
     {

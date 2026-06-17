@@ -28,7 +28,7 @@
     },
     "require-dev": {
         "guzzlehttp/guzzle": "^7.3",
-        "jangregor/phpstan-prophecy": "^1.0",
+        "jangregor/phpstan-prophecy": "^2.0",
         "laminas/laminas-diactoros": "^3.0",
         "nyholm/psr7": "^1",
         "phpspec/prophecy-phpunit": "^2.0",

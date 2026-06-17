@@ -25,13 +25,11 @@ use TypeError;
 use function assert;
 use function get_debug_type;
 use function in_array;
-use function is_array;
 use function is_callable;
 use function is_iterable;
 use function is_resource;
 use function is_string;
 use function sprintf;
-use function stream_get_meta_data;
 
 class Client implements ClientInterface
 {
@@ -113,7 +111,7 @@ class Client implements ClientInterface
     {
         $body = $request->getBody();
 
-        if ($body === null || is_string($body) || (is_resource($body) && is_array(@stream_get_meta_data($body)))) {
+        if ($body === null || is_string($body) || is_resource($body)) {
             return $request;
         }
 

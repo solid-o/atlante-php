@@ -47,13 +47,14 @@ class PsrClientRequester implements RequesterInterface
                 $requestData = $requestData();
             }
 
-            if (! is_string($requestData) && ! is_resource($requestData)) {
+            if (is_resource($requestData)) {
+                $stream = $this->streamFactory->createStreamFromResource($requestData);
+            } elseif (is_string($requestData)) {
+                $stream = $this->streamFactory->createStream($requestData);
+            } else {
                 throw new InvalidArgumentException(sprintf('Request body should be a string or a stream resource, "%s" passed', get_debug_type($requestData)));
             }
 
-            $stream = is_resource($requestData) ?
-                $this->streamFactory->createStreamFromResource($requestData) :
-                $this->streamFactory->createStream($requestData);
             $request = $request->withBody($stream);
         }
 

@@ -8,7 +8,7 @@ use Solido\Atlante\Http\HeaderBag;
 
 class AccessDeniedResponse extends InvalidResponse
 {
-    private const HTTP_STATUS = 403;
+    private const int HTTP_STATUS = 403;
 
     public function __construct(HeaderBag $headers, mixed $data)
     {

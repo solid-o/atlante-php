@@ -67,11 +67,9 @@ class UrlDecorator implements DecoratorInterface
                             (($urlFragment ?? '') !== '' ? '#' : '') . $urlFragment;
                     }
 
-                    if ($basePath !== null) {
-                        $pos = strrpos($basePath, '/');
-                        assert($pos !== false);
-                        $path = substr($basePath, 0, $pos) . '/' . $urlPath;
-                    }
+                    $pos = strrpos($basePath, '/');
+                    assert($pos !== false);
+                    $path = substr($basePath, 0, $pos) . '/' . $urlPath;
 
                     $query = $urlQuery ?? '';
                     $fragment = $urlFragment ?? '';

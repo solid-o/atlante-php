@@ -13,7 +13,7 @@ use function method_exists;
 use function sprintf;
 
 /**
- * @property-read array|string|resource|Traversable|Closure $body
+ * @property-read array<array-key, mixed>|string|resource|Traversable<array-key, string>|Closure(): string|null $body
  * @property-read string $url
  * @property-read string $method
  * @property-read string[]|string[][] $headers
@@ -48,7 +48,6 @@ class Request
     /** @return array<string, string|array<string|null>|null> */
     public function getHeaders(): array
     {
-        /** @phpstan-ignore-next-line */
         return $this->headers->all();
     }
 

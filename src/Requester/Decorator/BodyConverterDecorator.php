@@ -16,7 +16,6 @@ use function feof;
 use function fread;
 use function get_debug_type;
 use function http_build_query;
-use function is_array;
 use function is_callable;
 use function is_iterable;
 use function is_resource;
@@ -25,7 +24,6 @@ use function is_string;
 use function json_encode;
 use function sprintf;
 use function str_starts_with;
-use function stream_get_meta_data;
 use function strlen;
 use function strrev;
 use function substr;
@@ -60,7 +58,7 @@ class BodyConverterDecorator implements DecoratorInterface
                     $body = self::encodeIterable($body, $headers);
                 }
 
-                if ($length === null || $length < 0) {
+                if ($length === null || $length <= 0) {
                     yield $body;
 
                     return;
@@ -137,7 +135,7 @@ class BodyConverterDecorator implements DecoratorInterface
         }
 
         // if it's a valid stream resource
-        if (is_resource($body) && is_array(@stream_get_meta_data($body))) {
+        if (is_resource($body)) {
             return $body;
         }
 

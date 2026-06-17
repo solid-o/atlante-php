@@ -21,7 +21,6 @@ use function count;
 use function implode;
 use function in_array;
 use function is_array;
-use function is_string;
 use function ksort;
 use function max;
 use function sprintf;
@@ -37,8 +36,8 @@ use const DATE_RFC2822;
  */
 class HeaderBag implements IteratorAggregate, Countable
 {
-    protected const UPPER = '_ABCDEFGHIJKLMNOPQRSTUVWXYZ';
-    protected const LOWER = '-abcdefghijklmnopqrstuvwxyz';
+    protected const string UPPER = '_ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+    protected const string LOWER = '-abcdefghijklmnopqrstuvwxyz';
 
     /** @var array<string, array<string|null>> */
     protected array $headers = [];
@@ -137,7 +136,7 @@ class HeaderBag implements IteratorAggregate, Countable
      */
     public function get(string $key, string|null $default = null): string|null
     {
-        $headers = $this->all($key);
+        $headers = $this->headers[strtr($key, self::UPPER, self::LOWER)] ?? [];
 
         if (! $headers) {
             return $default;
@@ -146,8 +145,6 @@ class HeaderBag implements IteratorAggregate, Countable
         if (! isset($headers[0])) {
             return null;
         }
-
-        assert(is_string($headers[0]));
 
         return $headers[0];
     }
@@ -172,8 +169,6 @@ class HeaderBag implements IteratorAggregate, Countable
                 array_push($this->headers[$key], ...$values);
             }
         } else {
-            assert($values === null || is_string($values));
-
             if ($replace) {
                 $this->headers[$key] = [$values];
             } else {

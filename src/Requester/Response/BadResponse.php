@@ -11,7 +11,7 @@ use function assert;
 
 class BadResponse extends InvalidResponse
 {
-    private const HTTP_STATUS = 400;
+    private const int HTTP_STATUS = 400;
 
     public function __construct(HeaderBag $headers, mixed $data, BadResponsePropertyTreeParserFactory|null $parserFactory = null)
     {
