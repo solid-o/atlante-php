@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Solido\Atlante\Tests\Http\Integration;
 
 use Exception;
+use PHPUnit\Framework\Attributes\Group;
 use PHPUnit\Framework\TestCase;
 use Solido\Atlante\Http\Client;
 use Solido\Atlante\Requester\Decorator\AcceptFallbackDecorator;
@@ -18,9 +19,7 @@ use Symfony\Component\Process\Process;
 
 use function fopen;
 
-/**
- * @group integration
- */
+#[Group("integration")]
 abstract class AbstractClientTest extends TestCase
 {
     private static Process $server;

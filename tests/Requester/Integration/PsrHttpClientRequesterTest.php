@@ -6,12 +6,11 @@ namespace Solido\Atlante\Tests\Requester\Integration;
 
 use GuzzleHttp\Client;
 use GuzzleHttp\Psr7\HttpFactory;
+use PHPUnit\Framework\Attributes\Group;
 use Solido\Atlante\Requester\PsrClientRequester;
 use Solido\Atlante\Requester\RequesterInterface;
 
-/**
- * @group integration
- */
+#[Group('integration')]
 class PsrHttpClientRequesterTest extends AbstractClientRequesterTest
 {
     protected function createRequester(): RequesterInterface

@@ -4,14 +4,13 @@ declare(strict_types=1);
 
 namespace Solido\Atlante\Tests\Utils;
 
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use Solido\Atlante\Utils\ArrayUtils;
 
 class ArrayUtilsTest extends TestCase
 {
-    /**
-     * @dataProvider provideDataToCamelCaseKeys
-     */
+    #[DataProvider('provideDataToCamelCaseKeys')]
     public function testToCamelCaseKeys(array $expected, array $input): void
     {
         self::assertEquals($expected, ArrayUtils::toCamelCaseKeys($input));
@@ -25,9 +24,7 @@ class ArrayUtilsTest extends TestCase
         ];
     }
 
-    /**
-     * @dataProvider provideDataToSnakeCaseKeys
-     */
+    #[DataProvider('provideDataToSnakeCaseKeys')]
     public function testToSnakeCaseKeys(array $expected, array $input): void
     {
         self::assertEquals($expected, ArrayUtils::toSnakeCaseKeys($input));

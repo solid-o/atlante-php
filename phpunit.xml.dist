@@ -7,6 +7,8 @@
   <testsuites>
     <testsuite name="Project Test Suite">
       <directory>tests/</directory>
+      <exclude>tests/Http/Integration/AbstractClientTest.php</exclude>
+      <exclude>tests/Requester/Integration/AbstractClientRequesterTest.php</exclude>
     </testsuite>
   </testsuites>
   <source>

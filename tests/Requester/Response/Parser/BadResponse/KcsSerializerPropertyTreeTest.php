@@ -6,6 +6,7 @@ namespace Solido\Atlante\Tests\Requester\Response\Parser\BadResponse;
 
 use Generator;
 use InvalidArgumentException;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use Solido\Atlante\Requester\Response\BadResponsePropertyTree;
 use Solido\Atlante\Requester\Response\Parser\BadResponse\KcsSerializerPropertyTreeParser;
@@ -17,9 +18,8 @@ class KcsSerializerPropertyTreeTest extends TestCase
 {
     /**
      * @param object|array<string,mixed>|string $content
-     *
-     * @dataProvider provideParseCases
      */
+    #[DataProvider('provideParseCases')]
     public function testParse($content): void
     {
         $parser = new KcsSerializerPropertyTreeParser();
@@ -101,10 +101,10 @@ class KcsSerializerPropertyTreeTest extends TestCase
 
     /**
      * @param object|array<string,mixed>|string $content
-     * @phpstan-param class-string<Throwable> $exceptionClass
      *
-     * @dataProvider provideBadCases
+     * @phpstan-param class-string<Throwable> $exceptionClass
      */
+    #[DataProvider('provideBadCases')]
     public function testBadCases($content, string $exceptionClass, ?string $message = null): void
     {
         $this->expectException($exceptionClass);
@@ -113,29 +113,18 @@ class KcsSerializerPropertyTreeTest extends TestCase
         }
 
         $parser = new KcsSerializerPropertyTreeParser();
+        self::assertFalse($parser->supports($content));
         $parser->parse($content);
     }
 
     /**
      * @param object|array<string,mixed>|string $content
-     *
-     * @dataProvider provideParseCases
      */
+    #[DataProvider('provideParseCases')]
     public function testSupports($content): void
     {
         $parser = new KcsSerializerPropertyTreeParser();
         self::assertTrue($parser->supports($content));
-    }
-
-    /**
-     * @param object|array<string,mixed>|string $content
-     *
-     * @dataProvider provideBadCases
-     */
-    public function testSupportsOnBadCases($content): void
-    {
-        $parser = new KcsSerializerPropertyTreeParser();
-        self::assertFalse($parser->supports($content));
     }
 
     public static function provideBadCases(): Generator

@@ -164,6 +164,17 @@ class HeaderBagTest extends TestCase
         self::assertEquals(['foo' => ['fiz', 'fuz', 'foobar'], 'fuzz' => ['bizz']], $bag->all());
     }
 
+    public function testSetNonCacheControlHeaderDoesNotChangeCacheControlDirectives(): void
+    {
+        $bag = new HeaderBag(['cache-control' => 'public, max-age=10']);
+
+        $bag->set('foo', 'no-cache');
+
+        self::assertTrue($bag->hasCacheControlDirective('public'));
+        self::assertSame('10', $bag->getCacheControlDirective('max-age'));
+        self::assertFalse($bag->hasCacheControlDirective('no-cache'));
+    }
+
     public function testSetAssociativeArray(): void
     {
         $bag = new HeaderBag();

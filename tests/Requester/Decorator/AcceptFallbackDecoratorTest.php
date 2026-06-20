@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Solido\Atlante\Tests\Requester\Decorator;
 
 use Generator;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use Solido\Atlante\Requester\Decorator\AcceptFallbackDecorator;
 use Solido\Atlante\Requester\Request;
@@ -14,9 +15,8 @@ class AcceptFallbackDecoratorTest extends TestCase
     /**
      * @param array<string, mixed>|null $given
      * @param array<string,mixed> $expected
-     *
-     * @dataProvider provideDecorationCases
      */
+    #[DataProvider('provideDecorationCases')]
     public function testDecoration(?string $fallback, ?array $given, array $expected): void
     {
         $decorator = new AcceptFallbackDecorator($fallback);

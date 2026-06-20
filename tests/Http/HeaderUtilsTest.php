@@ -4,14 +4,13 @@ declare(strict_types=1);
 
 namespace Solido\Atlante\Tests\Http;
 
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use Solido\Atlante\Http\HeaderUtils;
 
 class HeaderUtilsTest extends TestCase
 {
-    /**
-     * @dataProvider provideHeaderToSplit
-     */
+    #[DataProvider('provideHeaderToSplit')]
     public function testSplit(array $expected, string $header, string $separator): void
     {
         self::assertSame($expected, HeaderUtils::split($header, $separator));

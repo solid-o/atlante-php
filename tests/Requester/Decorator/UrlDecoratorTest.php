@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Solido\Atlante\Tests\Requester\Decorator;
 
 use Generator;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use Solido\Atlante\Requester\Decorator\UrlDecorator;
 use Solido\Atlante\Requester\Request;
@@ -19,9 +20,7 @@ class UrlDecoratorTest extends TestCase
         self::assertNotSame($request, $decorated);
     }
 
-    /**
-     * @dataProvider provideDecorateCases
-     */
+    #[DataProvider('provideDecorateCases')]
     public function testDecorate(string $baseUrl, string $url, string $expected): void
     {
         $decorator = new UrlDecorator($baseUrl);

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Solido\Atlante\Tests\Requester\Decorator;
 
 use Generator;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use Solido\Atlante\Requester\Decorator\VersionSetterDecorator;
 use Solido\Atlante\Requester\Request;
@@ -21,9 +22,8 @@ class VersionSetterDecoratorTest extends TestCase
     /**
      * @param array<string,string>      $expectedHeaders
      * @param array<string,string>|null $givenHeaders
-     *
-     * @dataProvider provideDecorateCases
      */
+    #[DataProvider('provideDecorateCases')]
     public function testDecorate(string $version, array $expectedHeaders, ?array $givenHeaders): void
     {
         $decorator = new VersionSetterDecorator($version);

@@ -6,9 +6,11 @@ namespace Solido\Atlante\Tests\Requester\Response;
 
 use Generator;
 use Nyholm\Psr7\Response as PsrResponse;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use Prophecy\PhpUnit\ProphecyTrait;
 use Psr\Http\Message\ResponseInterface as PsrResponseInterface;
+use Psr\Http\Message\StreamInterface;
 use Solido\Atlante\Http\HeaderBag;
 use Solido\Atlante\Requester\Response\AccessDeniedResponse;
 use Solido\Atlante\Requester\Response\BadResponse;
@@ -32,9 +34,8 @@ class ResponseFactoryTest extends TestCase
     /**
      * @phpstan-param class-string $responseClassname
      * @phpstan-param array<string, string[]> $expectedHeaders
-     *
-     * @dataProvider provideParseCases
      */
+    #[DataProvider('provideParseCases')]
     public function testFromResponse($requesterResponse, ResponseFactoryInterface $factory, string $responseClassname, int $statusCode, $expectedData, array $expectedHeaders): void
     {
         $response = $factory->fromResponse($requesterResponse);
@@ -48,7 +49,7 @@ class ResponseFactoryTest extends TestCase
         self::assertEquals($expectedHeaders, $response->getHeaders()->all());
     }
 
-    public function provideParseCases(): Generator
+    public static function provideParseCases(): Generator
     {
         foreach (['SfResponse', 'PsrResponse'] as $kind) {
             $mockMethod = 'mock' . $kind;
@@ -58,37 +59,37 @@ class ResponseFactoryTest extends TestCase
             $statusCode = 200;
             $content = 'foobar';
 
-            yield [$this->$mockMethod($statusCode, $content, $headers), $factory, InvalidResponse::class, $statusCode, $content, []];
+            yield [self::$mockMethod($statusCode, $content, $headers), $factory, InvalidResponse::class, $statusCode, $content, []];
 
             $content = '{"_id":"foo"}';
 
-            yield [$this->$mockMethod($statusCode, $content, $headers), $factory, InvalidResponse::class, $statusCode, $content, []];
+            yield [self::$mockMethod($statusCode, $content, $headers), $factory, InvalidResponse::class, $statusCode, $content, []];
 
             $headers = ['content-type' => 'application/json'];
 
-            yield [$this->$mockMethod($statusCode, $content, $headers), $factory, Response::class, $statusCode, (object) ['_id' => 'foo'], ['content-type' => ['application/json']]];
+            yield [self::$mockMethod($statusCode, $content, $headers), $factory, Response::class, $statusCode, (object) ['_id' => 'foo'], ['content-type' => ['application/json']]];
 
             $statusCode = 201;
 
-            yield [$this->$mockMethod($statusCode, $content, $headers), $factory, Response::class, $statusCode, (object) ['_id' => 'foo'], ['content-type' => ['application/json']]];
+            yield [self::$mockMethod($statusCode, $content, $headers), $factory, Response::class, $statusCode, (object) ['_id' => 'foo'], ['content-type' => ['application/json']]];
 
             $statusCode = 300;
 
-            yield [$this->$mockMethod($statusCode, $content, $headers), $factory, InvalidResponse::class, $statusCode, (object) ['_id' => 'foo'], ['content-type' => ['application/json']]];
+            yield [self::$mockMethod($statusCode, $content, $headers), $factory, InvalidResponse::class, $statusCode, (object) ['_id' => 'foo'], ['content-type' => ['application/json']]];
 
             $statusCode = 403;
 
-            yield [$this->$mockMethod($statusCode, $content, $headers), $factory, AccessDeniedResponse::class, $statusCode, (object) ['_id' => 'foo'], ['content-type' => ['application/json']]];
+            yield [self::$mockMethod($statusCode, $content, $headers), $factory, AccessDeniedResponse::class, $statusCode, (object) ['_id' => 'foo'], ['content-type' => ['application/json']]];
 
             $statusCode = 404;
 
-            yield [$this->$mockMethod($statusCode, $content, $headers), $factory, NotFoundResponse::class, $statusCode, (object) ['_id' => 'foo'], ['content-type' => ['application/json']]];
+            yield [self::$mockMethod($statusCode, $content, $headers), $factory, NotFoundResponse::class, $statusCode, (object) ['_id' => 'foo'], ['content-type' => ['application/json']]];
 
             $statusCode = 400;
             $content = '{"name":"foo","errors":["Required."],"children":[]}';
 
             yield [
-                $this->$mockMethod($statusCode, $content, $headers),
+                self::$mockMethod($statusCode, $content, $headers),
                 $factory,
                 BadResponse::class,
                 $statusCode,
@@ -99,7 +100,7 @@ class ResponseFactoryTest extends TestCase
             $statusCode = 500;
 
             yield [
-                $this->$mockMethod($statusCode, $content, $headers),
+                self::$mockMethod($statusCode, $content, $headers),
                 $factory,
                 InvalidResponse::class,
                 $statusCode,
@@ -148,35 +149,125 @@ class ResponseFactoryTest extends TestCase
      * @param string[]|string[][] $headers
      */
     // @phpcs:ignore SlevomatCodingStandard.Classes.UnusedPrivateElements.UnusedMethod
-    private function mockSfResponse(int $statusCode, string $content, array $headers): SymfonyHttpClientResponse
+    private static function mockSfResponse(int $statusCode, string $content, array $headers): SymfonyHttpClientResponse
     {
-        $response = $this->prophesize(SymfonyHttpClientResponse::class);
+        return new readonly class($statusCode, $headers, $content) implements SymfonyHttpClientResponse {
+            public function __construct(private int $statusCode, private array $headers, private string $content)
+            {
+            }
 
-        $response->getStatusCode()->willReturn($statusCode);
-        $response->getHeaders(false)->willReturn($headers);
-        $response->getContent(false)->willReturn($content);
+            public function getStatusCode(): int
+            {
+                return $this->statusCode;
+            }
 
-        $r = $response->reveal();
-        assert($r instanceof SymfonyHttpClientResponse);
+            public function getHeaders(bool $throw = true): array
+            {
+                return $this->headers;
+            }
 
-        return $r;
+            public function getContent(bool $throw = true): string
+            {
+                return $this->content;
+            }
+
+            public function toArray(bool $throw = true): array
+            {
+                // TODO: Implement toArray() method.
+            }
+
+            public function cancel(): void
+            {
+                // TODO: Implement cancel() method.
+            }
+
+            public function getInfo(?string $type = null): mixed
+            {
+                // TODO: Implement getInfo() method.
+            }
+        };
     }
 
     /**
      * @param string[]|string[][] $headers
      */
     // @phpcs:ignore SlevomatCodingStandard.Classes.UnusedPrivateElements.UnusedMethod
-    private function mockPsrResponse(int $statusCode, string $content, array $headers): PsrResponseInterface
+    private static function mockPsrResponse(int $statusCode, string $content, array $headers): PsrResponseInterface
     {
-        $response = $this->prophesize(PsrResponseInterface::class);
+        return new readonly class($statusCode, $headers, $content) implements PsrResponseInterface {
+            public function __construct(private int $statusCode, private array $headers, private string $content)
+            {
+            }
 
-        $response->getStatusCode()->willReturn($statusCode);
-        $response->getHeaders()->willReturn($headers);
-        $response->getBody()->willReturn($content);
+            public function getProtocolVersion()
+            {
+                // TODO: Implement getProtocolVersion() method.
+            }
 
-        $r = $response->reveal();
-        assert($r instanceof PsrResponseInterface);
+            public function withProtocolVersion(string $version)
+            {
+                // TODO: Implement withProtocolVersion() method.
+            }
 
-        return $r;
+            public function getHeaders()
+            {
+                return $this->headers;
+            }
+
+            public function hasHeader(string $name)
+            {
+                // TODO: Implement hasHeader() method.
+            }
+
+            public function getHeader(string $name)
+            {
+                // TODO: Implement getHeader() method.
+            }
+
+            public function getHeaderLine(string $name)
+            {
+                // TODO: Implement getHeaderLine() method.
+            }
+
+            public function withHeader(string $name, $value)
+            {
+                // TODO: Implement withHeader() method.
+            }
+
+            public function withAddedHeader(string $name, $value)
+            {
+                // TODO: Implement withAddedHeader() method.
+            }
+
+            public function withoutHeader(string $name)
+            {
+                // TODO: Implement withoutHeader() method.
+            }
+
+            public function getBody()
+            {
+                return $this->content;
+            }
+
+            public function withBody(StreamInterface $body)
+            {
+                // TODO: Implement withBody() method.
+            }
+
+            public function getStatusCode(): int
+            {
+                return $this->statusCode;
+            }
+
+            public function withStatus(int $code, string $reasonPhrase = ''): PsrResponseInterface
+            {
+                // TODO: Implement withStatus() method.
+            }
+
+            public function getReasonPhrase(): string
+            {
+                // TODO: Implement getReasonPhrase() method.
+            }
+        };
     }
 }

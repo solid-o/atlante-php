@@ -6,6 +6,7 @@ namespace Solido\Atlante\Tests\Http;
 
 use ArrayObject;
 use Closure;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use Prophecy\Argument;
 use Prophecy\PhpUnit\ProphecyTrait;
@@ -138,9 +139,7 @@ class ClientTest extends TestCase
         $this->client->patch('/', '{}', [])->getStatusCode();
     }
 
-    /**
-     * @dataProvider provideNoBodyMethods
-     */
+    #[DataProvider('provideNoBodyMethods')]
     public function testRequestShouldClearRequestDataForDisallowedMethods(string $method): void
     {
         $this->requester->request($method, '/', ['accept' => ['application/json']], null, Argument::type('callable'))
@@ -157,9 +156,7 @@ class ClientTest extends TestCase
         $this->client->request($method, '/', 'test', [])->getStatusCode();
     }
 
-    /**
-     * @dataProvider provideNoBodyMethods
-     */
+    #[DataProvider('provideNoBodyMethods')]
     public function testRequestShouldNotThrowIfThrowParameterIsFalse(string $method): void
     {
         $this->requester->request($method, '/', ['accept' => ['application/json']], null, null)
@@ -235,9 +232,7 @@ class ClientTest extends TestCase
         $this->client->request('POST', '/', '{}', ['X-Powered-By' => 'PHPUNIT']);
     }
 
-    /**
-     * @dataProvider provideInvalidResponses
-     */
+    #[DataProvider('provideInvalidResponses')]
     public function testShouldFilterResponseAndThrowIfInvalid(string $exceptionClass, AbstractResponse $response): void
     {
         $this->expectException($exceptionClass);
@@ -283,9 +278,7 @@ class ClientTest extends TestCase
         $this->client->post('/', $stream, []);
     }
 
-    /**
-     * @dataProvider provideIterableBody
-     */
+    #[DataProvider('provideIterableBody')]
     public function testShouldNormalizeIterableBody(iterable $iterable): void
     {
         $this->requester->request('POST', '/', [

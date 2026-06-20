@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Solido\Atlante\Tests\Requester\Integration;
 
+use PHPUnit\Framework\Attributes\Group;
 use PHPUnit\Framework\TestCase;
 use Solido\Atlante\Requester\Decorator\BodyConverterDecorator;
 use Solido\Atlante\Requester\Request;
@@ -13,9 +14,7 @@ use Symfony\Component\Process\Process;
 
 use function fopen;
 
-/**
- * @group integration
- */
+#[Group('integration')]
 abstract class AbstractClientRequesterTest extends TestCase
 {
     private static Process $server;

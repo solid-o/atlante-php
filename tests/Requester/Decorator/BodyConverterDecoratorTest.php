@@ -7,6 +7,8 @@ namespace Solido\Atlante\Tests\Requester\Decorator;
 use Closure;
 use Generator;
 use InvalidArgumentException;
+use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\Attributes\DoesNotPerformAssertions;
 use PHPUnit\Framework\TestCase;
 use RuntimeException;
 use Solido\Atlante\Requester\Decorator\BodyConverterDecorator;
@@ -14,9 +16,9 @@ use Solido\Atlante\Requester\Request;
 use UnexpectedValueException;
 
 use function curl_init;
+use function fopen;
 use function is_callable;
 use function json_encode;
-use function fopen;
 
 use const JSON_THROW_ON_ERROR;
 
@@ -33,10 +35,10 @@ class BodyConverterDecoratorTest extends TestCase
     /**
      * @param array|string|resource|Closure|iterable<string>|null $given
      * @param string|resource|null $expected
-     * @phpstan-param array|string|resource|Closure(): string|iterable<string>|null $given
      *
-     * @dataProvider provideDecorateCases
+     * @phpstan-param array|string|resource|Closure(): string|iterable<string>|null $given
      */
+    #[DataProvider('provideDecorateCases')]
     public function testDecorateBody($given, $expected): void
     {
         $decorator = new BodyConverterDecorator();
@@ -101,9 +103,17 @@ class BodyConverterDecoratorTest extends TestCase
         self::assertEquals('', $body(3));
     }
 
-    /**
-     * @doesNotPerformAssertions
-     */
+    public function testShouldReturnWholeStringForZeroLengthChunk(): void
+    {
+        $decorator = new BodyConverterDecorator();
+        $decorated = $decorator->decorate(new Request('GET', '/example.com', null, static fn () => 'foobar'));
+
+        $body = $decorated->getBody();
+        self::assertEquals('foobar', $body(0));
+        self::assertEquals('', $body(0));
+    }
+
+    #[DoesNotPerformAssertions]
     public function testDeferredCallable(): void
     {
         $decorator = new BodyConverterDecorator();
@@ -114,9 +124,8 @@ class BodyConverterDecoratorTest extends TestCase
 
     /**
      * @param string[]|string[][] $givenHeaders
-     *
-     * @dataProvider provideContents
      */
+    #[DataProvider('provideContents')]
     public function testContentType(?array $givenHeaders, string $expectedContent): void
     {
         $decorator = new BodyConverterDecorator();
@@ -129,6 +138,7 @@ class BodyConverterDecoratorTest extends TestCase
     public static function provideContents(): Generator
     {
         yield [['content-type' => 'application/json'], '{"foo":"bar","bar":["bar","bar"]}'];
+        yield [['content-type' => 'application/vnd.api+json'], '{"foo":"bar","bar":["bar","bar"]}'];
         yield [null, '{"foo":"bar","bar":["bar","bar"]}'];
         yield [['x-foo' => 'bar'], '{"foo":"bar","bar":["bar","bar"]}'];
         yield [['content-type' => 'application/x-www-form-urlencoded'], 'foo=bar&bar%5B0%5D=bar&bar%5B1%5D=bar'];

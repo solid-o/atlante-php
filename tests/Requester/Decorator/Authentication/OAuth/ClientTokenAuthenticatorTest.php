@@ -16,7 +16,9 @@ use Solido\Atlante\Requester\Request;
 use Solido\Atlante\Requester\RequesterInterface;
 use Solido\Atlante\Requester\Response\Response;
 use Solido\Atlante\Storage\AbstractStorage;
+use Solido\Atlante\Storage\ItemInterface;
 use Solido\Atlante\Storage\PsrCacheStorage;
+use Solido\Atlante\Storage\StorageInterface;
 use Symfony\Component\Cache\Adapter\ArrayAdapter;
 
 class ClientTokenAuthenticatorTest extends TestCase
@@ -81,6 +83,36 @@ class ClientTokenAuthenticatorTest extends TestCase
 
         $expiration = (fn () => ($this->getExpiration)($item))->bindTo($this->storage, AbstractStorage::class)();
         self::assertTrue($expiration <= new DateTimeImmutable('+59 minutes'));
+    }
+
+    public function testShouldCacheRequestedTokenWithSafetyWindow(): void
+    {
+        $item = $this->prophesize(ItemInterface::class);
+        $item->isHit()
+            ->shouldBeCalled()
+            ->willReturn(false);
+        $item->set('access_token')
+            ->shouldBeCalled()
+            ->willReturn($item->reveal());
+        $item->expiresAfter(3540)
+            ->shouldBeCalled()
+            ->willReturn($item->reveal());
+
+        $storage = $this->prophesize(StorageInterface::class);
+        $storage->getItem('solido_atlante_client_token')
+            ->shouldBeCalled()
+            ->willReturn($item->reveal());
+        $storage->save($item->reveal())
+            ->shouldBeCalled()
+            ->willReturn(true);
+
+        $this->requester->request('POST', 'http://localhost/token', ['Content-Type' => 'application/json'], '{"grant_type":"client_credentials","client_id":"id","client_secret":"secret"}')
+            ->shouldBeCalled()
+            ->willReturn(new Response(200, new HeaderBag(), (object) ['access_token' => 'access_token', 'expires_in' => 3600]));
+
+        $decorator = new ClientTokenAuthenticator($this->requester->reveal(), $storage->reveal(), ['token_endpoint' => 'http://localhost/token', 'client_id' => 'id', 'client_secret' => 'secret']);
+
+        self::assertSame('access_token', $decorator->getToken());
     }
 
     public function testShouldRequestATokenWithFormEncoding(): void

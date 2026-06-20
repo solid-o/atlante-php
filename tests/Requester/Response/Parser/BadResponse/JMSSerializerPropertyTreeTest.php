@@ -6,6 +6,7 @@ namespace Solido\Atlante\Tests\Requester\Response\Parser\BadResponse;
 
 use Generator;
 use InvalidArgumentException;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use Solido\Atlante\Requester\Response\BadResponsePropertyTree;
 use Solido\Atlante\Requester\Response\Parser\BadResponse\JMSSerializerPropertyTreeParser;
@@ -17,9 +18,8 @@ class JMSSerializerPropertyTreeTest extends TestCase
 {
     /**
      * @param object|array<string,mixed>|string $content
-     *
-     * @dataProvider provideParseCases
      */
+    #[DataProvider('provideParseCases')]
     public function testParse($content): void
     {
         $parser = new JMSSerializerPropertyTreeParser();
@@ -89,11 +89,11 @@ class JMSSerializerPropertyTreeTest extends TestCase
 
     /**
      * @param object|array<string,mixed>|string $content
-     * @phpstan-param class-string<Throwable> $exceptionClass
      *
-     * @dataProvider provideBadCases
+     * @phpstan-param class-string<Throwable> $exceptionClass
      */
-    public function testBadCases($content, string $exceptionClass, ?string $message = null): void
+    #[DataProvider('provideBadCases')]
+    public function testBadCases(mixed $content, string $exceptionClass, ?string $message = null): void
     {
         $this->expectException($exceptionClass);
         if ($message !== null) {
@@ -101,29 +101,18 @@ class JMSSerializerPropertyTreeTest extends TestCase
         }
 
         $parser = new JMSSerializerPropertyTreeParser();
+        self::assertFalse($parser->supports($content));
         $parser->parse($content);
     }
 
     /**
      * @param object|array<string,mixed>|string $content
-     *
-     * @dataProvider provideParseCases
      */
-    public function testSupports($content): void
+    #[DataProvider('provideParseCases')]
+    public function testSupports(mixed $content): void
     {
         $parser = new JMSSerializerPropertyTreeParser();
         self::assertTrue($parser->supports($content));
-    }
-
-    /**
-     * @param object|array<string,mixed>|string $content
-     *
-     * @dataProvider provideBadCases
-     */
-    public function testSupportsOnBadCases($content): void
-    {
-        $parser = new JMSSerializerPropertyTreeParser();
-        self::assertFalse($parser->supports($content));
     }
 
     public static function provideBadCases(): Generator

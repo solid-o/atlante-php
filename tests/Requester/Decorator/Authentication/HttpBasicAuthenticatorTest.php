@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Tests\Requester\Decorator\Authentication;
 
 use Generator;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use Solido\Atlante\Http\HeaderBag;
 use Solido\Atlante\Requester\Decorator\Authentication\HttpBasicAuthenticator;
@@ -15,9 +16,7 @@ use function reset;
 
 class HttpBasicAuthenticatorTest extends TestCase
 {
-    /**
-     * @dataProvider provideDecorationCases
-     */
+    #[DataProvider('provideDecorationCases')]
     public function testDecoration(string $usernameOrEncodedAuth, ?string $password, ?string $givenAuthHeader, ?string $expectedAuthHeader): void
     {
         $decorator = new HttpBasicAuthenticator($usernameOrEncodedAuth, $password);
@@ -48,7 +47,7 @@ class HttpBasicAuthenticatorTest extends TestCase
         yield ['MTI5NUFDNTYtQzk5OS00MUM0LTgzODQtQjhEOEQyRDJGM0FBOnNlY3JldA==', null, 'fooAuth', 'fooAuth'];
     }
 
-    /** @dataProvider provideHeaderDecorationCases */
+    #[DataProvider('provideHeaderDecorationCases')]
     public function testHeaderDecorationPreservePresets(?HeaderBag $given, HeaderBag $expected): void
     {
         $decorator = new HttpBasicAuthenticator('fooAuth');
